@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="The Fox programming language guide: syntax, compiler, runtime, functions, control flow, collections, Windows GUI, and threads.">
+  <title>Fox Language — Documentation</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to documentation</a>
+  <header class="topbar">
+    <div class="brand-wrap">
+      <button class="mobile-menu icon-button" id="mobile-menu" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <a class="brand" href="#top" aria-label="Fox Docs home"><span class="fox-mark">ƒ</span><span>Fox<span class="brand-light">Docs</span></span></a>
+      <span class="version-tag">compiler guide</span>
+    </div>
+    <div class="top-actions">
+      <label class="search-box" for="docs-search"><span class="search-icon" aria-hidden="true">⌕</span><input id="docs-search" type="search" placeholder="Search documentation…" autocomplete="off"><kbd> / </kbd></label>
+      <button class="icon-button theme-toggle" id="theme-toggle" aria-label="Switch color theme" title="Switch color theme"><span id="theme-icon">☼</span></button>
+      <a class="github-link" href="#reference">Reference <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+  <div class="page-shell" id="top">
+    <aside class="sidebar" id="sidebar" aria-label="Documentation navigation">
+      <div class="sidebar-scroll">
+        <div class="sidebar-label">GET STARTED</div>
+        <a class="nav-link active" href="#overview">Overview <span class="nav-dot"></span></a>
+        <a class="nav-link" href="#quickstart">Quick start</a>
+        <a class="nav-link" href="#compiler">Compiler & commands</a>
+        <div class="sidebar-label">LANGUAGE GUIDE</div>
+        <a class="nav-link" href="#syntax">Syntax & comments</a>
+        <a class="nav-link" href="#values">Values & types</a>
+        <a class="nav-link" href="#variables">Variables & constants</a>
+        <a class="nav-link" href="#operators">Operators & expressions</a>
+        <a class="nav-link" href="#control-flow">Control flow</a>
+        <a class="nav-link" href="#functions">Functions</a>
+        <a class="nav-link" href="#collections">Arrays & dictionaries</a>
+        <a class="nav-link" href="#modules">Modules & includes</a>
+        <div class="sidebar-label">BUILT-IN MODULES</div>
+        <a class="nav-link" href="#console">Con — console</a>
+        <a class="nav-link" href="#windows">Win — windows & GUI</a>
+        <a class="nav-link" href="#threads">Thread — concurrency</a>
+        <div class="sidebar-label">REFERENCE</div>
+        <a class="nav-link" href="#errors">Compiler errors</a>
+        <a class="nav-link" href="#limitations">Current limitations</a>
+        <a class="nav-link" href="#examples">Examples</a>
+        <div class="sidebar-note"><span class="note-icon">i</span><p>This guide documents the compiler implementation bundled with this site. Fox is evolving; partial support is called out where it matters.</p></div>
+      </div>
+      <div class="sidebar-footer"><span class="status-pip"></span> Windows x86-64 target <span class="sidebar-footer-right">PE32+</span></div>
+    </aside>
+
+    <main id="main" class="content">
+      <section class="hero doc-section" id="overview" data-search="overview fox language compiler machine code native windows x86-64 PE32+">
+        <div class="eyebrow"><span class="eyebrow-line"></span> THE FOX LANGUAGE</div>
+        <h1>Write Fox.<br><span>Compile native.</span></h1>
+        <p class="hero-copy">Fox is a small programming language with a Python-written compiler that emits Windows x86-64 machine code into a native PE32+ executable. These docs describe the implemented language—not a wish-list of future features.</p>
+        <div class="hero-actions"><a class="button button-primary" href="#quickstart">Get started <span>→</span></a><a class="button button-secondary" href="#reference">Explore the reference</a></div>
+        <div class="hero-stats"><div><strong>Native</strong><span>PE32+ executable output</span></div><div><strong>3 built-ins</strong><span>Con · Win · Thread</span></div><div><strong>.fox</strong><span>Source file extension</span></div></div>
+        <div class="hero-code-window" aria-label="Fox code example">
+          <div class="window-bar"><div class="window-dots"><i></i><i></i><i></i></div><span>hello.fox</span><button class="copy-button" data-copy="hero-snippet">Copy</button></div>
+          <pre><code id="hero-snippet"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+
+<span class="syn-keyword">constant</span> greeting = <span class="syn-string">"Hello from Fox!"</span>
+Console.log(greeting)</code></pre>
+          <div class="code-foot"><span class="green-dot"></span> Small source · native output</div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="quickstart" data-search="quick start install hello world first program source file fox compile run">
+        <div class="section-heading"><div><span class="section-kicker">01 / GET STARTED</span><h2>Your first Fox program</h2></div><span class="section-icon">⌘</span></div>
+        <p>Create a file named <code>hello.fox</code>. Include <code>Con</code> to print text or values, then call <code>Console.log</code>.</p>
+        <div class="code-card"><div class="code-header"><span><span class="file-pill">FOX</span> hello.fox</span><button class="copy-button" data-copy="quickstart-code">Copy</button></div><pre><code id="quickstart-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+
+Console.log(<span class="syn-string">"Hello from Fox!"</span>)
+Console.log(<span class="syn-number">2</span> + <span class="syn-number">3</span>)</code></pre></div>
+        <p>From PowerShell, use the <code>fox</code> command configured on your machine. The commands below assume it is available on <code>PATH</code> or defined in your PowerShell profile.</p>
+        <div class="command-grid"><div class="command-card"><span class="command-title">Compile and run</span><code>fox hello.fox</code><button class="copy-button" data-copy="cmd-run">Copy</button><span id="cmd-run" class="visually-hidden">fox hello.fox</span></div><div class="command-card"><span class="command-title">Compile only</span><code>fox hello.fox --compile-only</code><button class="copy-button" data-copy="cmd-compile">Copy</button><span id="cmd-compile" class="visually-hidden">fox hello.fox --compile-only</span></div><div class="command-card"><span class="command-title">Choose output path</span><code>fox hello.fox -o build\hello.exe</code><button class="copy-button" data-copy="cmd-output">Copy</button><span id="cmd-output" class="visually-hidden">fox hello.fox -o build\hello.exe</span></div></div>
+        <div class="callout callout-blue"><span class="callout-symbol">↳</span><div><strong>Remember</strong><p>With <code>--compile-only</code>, the compiler writes a sibling <code>.exe</code> unless <code>-o</code> is specified. Without <code>--compile-only</code>, the compiler launches the newly built executable.</p></div></div>
+      </section>
+
+      <section class="doc-section" id="compiler" data-search="compiler command line flags output exe compile-only -o run target platform PE32+ Python">
+        <div class="section-heading"><div><span class="section-kicker">02 / TOOLCHAIN</span><h2>Compiler & commands</h2></div><span class="section-icon">⚙</span></div>
+        <p>The compiler is implemented in Python. It parses the supported Fox subset, emits machine code and builds a Windows PE32+ executable directly; it does not invoke an assembler or linker as part of the normal compile path.</p>
+        <div class="table-wrap"><table><thead><tr><th>Command</th><th>Behavior</th></tr></thead><tbody><tr><td><code>fox file.fox</code></td><td>Compile to a temporary executable, then run it.</td></tr><tr><td><code>fox file.fox --compile-only</code></td><td>Write <code>file.exe</code> and stop after compilation.</td></tr><tr><td><code>fox file.fox -o out.exe</code></td><td>Write to <code>out.exe</code> and, unless compile-only is also provided, launch it.</td></tr><tr><td><code>fox --help</code></td><td>Show the command-line help exposed by the compiler.</td></tr></tbody></table></div>
+        <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>Platform target</strong><p>The emitted binary targets Windows x86-64. A generated EXE is not a cross-platform executable and will not run natively on Linux or macOS.</p></div></div>
+      </section>
+
+      <section class="doc-section" id="syntax" data-search="syntax comments newline indentation strings identifiers reserved words literals hash comments">
+        <div class="section-heading"><div><span class="section-kicker">03 / LANGUAGE GUIDE</span><h2>Syntax & comments</h2></div><span class="section-icon">{ }</span></div>
+        <p>Fox is line-oriented. Most statements occupy a single line, and blocks close with the exact marker <code>end:</code>. Indentation improves readability, but block boundaries are determined by the keywords and closing marker.</p>
+        <h3>Comments</h3><p>A <code>#</code> begins a comment outside a quoted string. The compiler ignores text from the marker to the end of that line.</p>
+        <div class="code-card"><div class="code-header"><span>comments.fox</span><button class="copy-button" data-copy="comments-code">Copy</button></div><pre><code id="comments-code"><span class="syn-comment"># This is a whole-line comment</span>
+<span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console  <span class="syn-comment"># and this is trailing</span>
+Console.log(<span class="syn-string">"The # inside this string is text"</span>)</code></pre></div>
+        <h3>Names & literals</h3><p>Identifiers begin with an ASCII letter or underscore, followed by letters, digits, or underscores. String literals use double quotes and JSON-style escapes, such as <code>\n</code>, <code>\t</code>, <code>\"</code>, and <code>\\</code>.</p>
+        <div class="mini-grid"><div class="mini-card"><strong>Numbers</strong><p><code>42</code>, <code>-8</code>, <code>3.14</code>, <code>1e3</code></p></div><div class="mini-card"><strong>Boolean literals</strong><p><code>true</code> and <code>false</code></p></div><div class="mini-card"><strong>Null literal</strong><p><code>null</code></p></div><div class="mini-card"><strong>Block terminator</strong><p><code>end:</code> closes blocks</p></div></div>
+        <p class="muted-note">Reserved words include <code>include</code>, <code>variable</code>, <code>constant</code>, <code>true</code>, <code>false</code>, <code>null</code>, <code>while</code>, <code>if</code>, <code>else</code>, <code>for</code>, <code>to</code>, <code>step</code>, <code>end</code>, and <code>return</code>. Some forms, such as <code>include</code>, are restricted to top-level code.</p>
+      </section>
+
+      <section class="doc-section" id="values" data-search="values types integer number decimal string boolean null array dictionary compile time runtime model">
+        <div class="section-heading"><div><span class="section-kicker">04 / DATA MODEL</span><h2>Values & types</h2></div><span class="section-icon">◈</span></div>
+        <p>The key distinction in current Fox is between values known to the compiler and values that exist as mutable runtime state in the generated program.</p>
+        <div class="type-cards"><div class="type-card type-runtime"><div class="type-top"><span class="type-symbol">01</span><span class="type-badge runtime-badge">Runtime</span></div><h3>Integer state</h3><p>Global integer variables, function arguments, integer locals, arithmetic, comparisons and loop state are emitted into native code.</p><code>variable score = 10</code></div><div class="type-card"><div class="type-top"><span class="type-symbol">02</span><span class="type-badge compile-badge">Compile-time</span></div><h3>Static values</h3><p>Strings, decimals, booleans, null, arrays and dictionaries are evaluated while compiling. They are useful for constants and static program data.</p><code>constant title = "Fox"</code></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Type / value</th><th>Example</th><th>Current behavior</th></tr></thead><tbody><tr><td>Integer</td><td><code>17</code></td><td>Can be a runtime variable and participate in native runtime arithmetic.</td></tr><tr><td>Number / decimal</td><td><code>2.5</code></td><td>Compile-time numeric calculation only; not native floating-point runtime state.</td></tr><tr><td>String</td><td><code>"hello"</code></td><td>Compile-time value; string concatenation with <code>+</code> is supported when both values are strings.</td></tr><tr><td>Boolean</td><td><code>true</code></td><td>Compile-time values can be conditions. Runtime comparisons produce booleans for <code>if</code>/<code>while</code>.</td></tr><tr><td>Null</td><td><code>null</code></td><td>Compile-time literal.</td></tr><tr><td>Array</td><td><code>[1, 2, 3]</code></td><td>Compile-time sequence; values can be accessed with integer indexes.</td></tr><tr><td>Dictionary</td><td><code>{"name": "Fox"}</code></td><td>Compile-time key/value data with quoted string keys.</td></tr></tbody></table></div>
+        <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>Do not assume every variable is dynamic</strong><p>A top-level <code>variable count = 0</code> is mutable native integer state. A top-level <code>variable title = "Fox"</code> is currently a compile-time value. Function-local variables must be integer-valued.</p></div></div>
+      </section>
+
+      <section class="doc-section" id="variables" data-search="variable constant declaration assignment compound plus equals runtime variable compile time constant type consistency">
+        <div class="section-heading"><div><span class="section-kicker">05 / DATA MODEL</span><h2>Variables & constants</h2></div><span class="section-icon">x =</span></div>
+        <h3>Declare values</h3><div class="code-card"><div class="code-header"><span>variables.fox</span><button class="copy-button" data-copy="variables-code">Copy</button></div><pre><code id="variables-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+
+<span class="syn-keyword">constant</span> app_name = <span class="syn-string">"Fox Tools"</span>
+<span class="syn-keyword">variable</span> score = <span class="syn-number">0</span>
+<span class="syn-keyword">variable</span> decimal_value = <span class="syn-number">3.5</span>
+<span class="syn-keyword">variable</span> enabled = <span class="syn-keyword">true</span>
+
+score += <span class="syn-number">10</span>
+score *= <span class="syn-number">2</span>
+Console.log(score)</code></pre></div>
+        <p><code>constant</code> marks a compile-time value as non-reassignable. A compile-time <code>variable</code> can be reassigned at top level, but the new value must have the same type as the original declaration. Runtime integer variables support <code>=</code> and compound numeric assignments.</p>
+        <h3>Assignment operators</h3><div class="operator-strip"><code>=</code><code>+=</code><code>-=</code><code>*=</code><code>/=</code><code>%=</code></div>
+        <p>Inside runtime blocks, assignments are restricted to known runtime integer variables and function parameters/locals. Declarations inside top-level <code>if</code>/<code>while</code>/<code>for</code> blocks are not supported; declare those variables before the block.</p>
+      </section>
+
+      <section class="doc-section" id="operators" data-search="operators arithmetic plus minus multiply divide modulo comparisons equals not equal precedence unary parentheses">
+        <div class="section-heading"><div><span class="section-kicker">06 / EXPRESSIONS</span><h2>Operators & expressions</h2></div><span class="section-icon">∑</span></div>
+        <div class="table-wrap"><table><thead><tr><th>Operator</th><th>Purpose</th><th>Notes</th></tr></thead><tbody><tr><td><code>+</code></td><td>Addition / string concatenation</td><td>Runtime arithmetic is integer-only; string concatenation is compile-time.</td></tr><tr><td><code>-</code></td><td>Subtraction / unary negative</td><td>Integer runtime arithmetic and compile-time numeric arithmetic.</td></tr><tr><td><code>*</code></td><td>Multiplication</td><td>Integer runtime arithmetic; compile-time numbers also supported.</td></tr><tr><td><code>/</code></td><td>Division</td><td>Runtime integer division truncates toward zero. Compile-time division uses integer truncation when both operands are integers; if either operand is decimal, it uses ordinary division.</td></tr><tr><td><code>%</code></td><td>Remainder</td><td>Runtime integers only; compile-time numeric remainder is available.</td></tr><tr><td><code>==</code>, <code>!=</code></td><td>Equality / inequality</td><td>At runtime, integer operands only.</td></tr><tr><td><code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></td><td>Numeric comparison</td><td>Runtime integer operands only.</td></tr><tr><td><code>( )</code></td><td>Grouping</td><td>Use parentheses to control evaluation order.</td></tr></tbody></table></div>
+        <h3>Precedence</h3><p>Parentheses bind first, followed by unary <code>+</code>/<code>-</code>, multiplication/division/remainder, addition/subtraction, and then a single comparison.</p>
+        <div class="code-card"><div class="code-header"><span>expressions.fox</span><button class="copy-button" data-copy="operators-code">Copy</button></div><pre><code id="operators-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+<span class="syn-keyword">variable</span> result = (<span class="syn-number">4</span> + <span class="syn-number">6</span>) * <span class="syn-number">2</span>
+Console.log(result)  <span class="syn-comment"># 20</span>
+
+<span class="syn-keyword">if</span> result >= <span class="syn-number">20</span>
+    Console.log(<span class="syn-string">"ready"</span>)
+<span class="syn-keyword">end</span>:</code></pre></div>
+        <p class="muted-note">Chained comparisons such as <code>a &lt; b &lt; c</code> are rejected. Logical operators such as <code>&amp;&amp;</code>, <code>and</code>, <code>or</code>, and boolean negation are not implemented in the current parser; use nested <code>if</code> statements instead.</p>
+      </section>
+
+      <section class="doc-section" id="control-flow" data-search="control flow if else while for to step end loops branching conditions runtime integer comparison">
+        <div class="section-heading"><div><span class="section-kicker">07 / CONTROL FLOW</span><h2>Control flow</h2></div><span class="section-icon">↳</span></div>
+        <h3><code>if</code> / <code>else</code></h3><p>Conditions must evaluate to a boolean: either a compile-time <code>true</code>/<code>false</code> or a comparison. The optional <code>else</code> branch shares the same closing <code>end:</code> marker.</p>
+        <div class="code-card"><div class="code-header"><span>if.fox</span><button class="copy-button" data-copy="if-code">Copy</button></div><pre><code id="if-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+<span class="syn-keyword">variable</span> power = <span class="syn-number">15</span>
+<span class="syn-keyword">if</span> power > <span class="syn-number">0</span>
+    Console.log(<span class="syn-string">"Power online"</span>)
+<span class="syn-keyword">else</span>
+    Console.log(<span class="syn-string">"Power depleted"</span>)
+<span class="syn-keyword">end</span>:</code></pre></div>
+        <h3><code>while</code></h3><p>Repeats while the condition is true. Runtime loops can use integer comparisons and update previously declared integer state.</p>
+        <div class="code-card"><div class="code-header"><span>while.fox</span><button class="copy-button" data-copy="while-code">Copy</button></div><pre><code id="while-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+<span class="syn-keyword">variable</span> count = <span class="syn-number">0</span>
+<span class="syn-keyword">while</span> count < <span class="syn-number">3</span>
+    Console.log(count)
+    count += <span class="syn-number">1</span>
+<span class="syn-keyword">end</span>:</code></pre></div>
+        <h3><code>for</code></h3><p>Fox's range loop uses <code>for name = start to limit</code> with an optional constant integer <code>step</code>. The limit is exclusive: the loop continues while the counter is less than the limit for positive steps, or greater than the limit for negative steps.</p>
+        <div class="code-card"><div class="code-header"><span>for.fox</span><button class="copy-button" data-copy="for-code">Copy</button></div><pre><code id="for-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+<span class="syn-keyword">for</span> i = <span class="syn-number">0</span> to <span class="syn-number">5</span>
+    Console.log(i)  <span class="syn-comment"># 0, 1, 2, 3, 4</span>
+<span class="syn-keyword">end</span>:
+
+<span class="syn-keyword">for</span> n = <span class="syn-number">6</span> to <span class="syn-number">0</span> step -<span class="syn-number">2</span>
+    Console.log(n)  <span class="syn-comment"># 6, 4, 2</span>
+<span class="syn-keyword">end</span>:</code></pre></div>
+        <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>Declare carefully</strong><p>Runtime declarations inside top-level control-flow blocks are not supported. Declare mutable state before the block. Function-local integer declarations are supported inside functions.</p></div></div>
+      </section>
+
+      <section class="doc-section" id="functions" data-search="functions parameters args return integer locals user functions function call four parameters native code">
+        <div class="section-heading"><div><span class="section-kicker">08 / REUSE</span><h2>Functions</h2></div><span class="section-icon">f( )</span></div>
+        <p>Define a function using <code>variable name(parameters)</code>, and close it with <code>end:</code>. Functions support up to four integer parameters and return integer values.</p>
+        <div class="code-card"><div class="code-header"><span>functions.fox</span><button class="copy-button" data-copy="functions-code">Copy</button></div><pre><code id="functions-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+
+<span class="syn-keyword">variable</span> multiply(a, b)
+    <span class="syn-keyword">return</span> a * b
+<span class="syn-keyword">end</span>:
+
+<span class="syn-keyword">variable</span> square(n)
+    <span class="syn-keyword">variable</span> result = n * n
+    <span class="syn-keyword">return</span> result
+<span class="syn-keyword">end</span>:
+
+<span class="syn-keyword">variable</span> answer = multiply(square(<span class="syn-number">4</span>), <span class="syn-number">2</span>)
+Console.log(answer)  <span class="syn-comment"># 32</span></code></pre></div>
+        <h3>Function rules</h3><ul class="feature-list"><li><span class="checkmark">✓</span><span>Arguments must be integer expressions.</span></li><li><span class="checkmark">✓</span><span>Return values are integers. A function that reaches its end without an explicit return defaults to <code>0</code>.</span></li><li><span class="checkmark">✓</span><span>Function-local variables are integer-only and runtime-backed.</span></li><li><span class="checkmark">✓</span><span>Functions can be called as statements or inside integer expressions.</span></li><li><span class="limitmark">!</span><span>Function-local <code>constant</code> declarations are not supported yet.</span></li></ul>
+        <p>For a zero-argument function, write empty parentheses: <code>variable greet()</code>. Call it with <code>greet()</code>.</p>
+      </section>
+
+      <section class="doc-section" id="collections" data-search="arrays lists dictionaries collections index compile time static values nested arrays key string quoted data">
+        <div class="section-heading"><div><span class="section-kicker">09 / DATA</span><h2>Arrays & dictionaries</h2></div><span class="section-icon">[ ]</span></div>
+        <p>Arrays and dictionaries are currently compile-time data structures. The compiler evaluates their literals and resolves indexes while compiling; they are not heap-allocated mutable runtime collections.</p>
+        <div class="code-card"><div class="code-header"><span>collections.fox</span><button class="copy-button" data-copy="collections-code">Copy</button></div><pre><code id="collections-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+
+<span class="syn-keyword">variable</span> items = [<span class="syn-string">"first"</span>, <span class="syn-string">"second"</span>, <span class="syn-string">"third"</span>]
+<span class="syn-keyword">variable</span> player = {
+    <span class="syn-string">"name"</span>: <span class="syn-string">"Fox"</span>,
+    <span class="syn-string">"level"</span>: <span class="syn-number">3</span>,
+    <span class="syn-string">"online"</span>: <span class="syn-keyword">true</span>
+}
+
+Console.log(items[<span class="syn-number">0</span>])
+Console.log(player[<span class="syn-string">"name"</span>])
+Console.log(items)</code></pre></div>
+        <div class="mini-grid"><div class="mini-card"><strong>Array indexes</strong><p>Zero-based integer indexes, for example <code>items[0]</code>. Out-of-range access is a compile error.</p></div><div class="mini-card"><strong>Dictionary keys</strong><p>Keys must be unique quoted strings. Read with <code>player["name"]</code>.</p></div></div>
+        <p>Nested arrays and dictionaries are supported as literals. Static values can be logged directly with <code>Console.log</code>. Runtime indexes and runtime mutation of these collections are not implemented.</p>
+      </section>
+
+      <section class="doc-section" id="modules" data-search="modules include custom module source file import alias Con Win Thread library inline functions namespace">
+        <div class="section-heading"><div><span class="section-kicker">10 / PROJECT STRUCTURE</span><h2>Modules & includes</h2></div><span class="section-icon">⇢</span></div>
+        <p><code>include</code> statements must appear at the top level. The three built-in modules are <code>Con</code>, <code>Win</code> and <code>Thread</code>. Each built-in module can only be included once in a source file.</p>
+        <div class="code-card"><div class="code-header"><span>includes.fox</span><button class="copy-button" data-copy="modules-code">Copy</button></div><pre><code id="modules-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+<span class="syn-keyword">include</span> Win <span class="syn-keyword">as</span> Win
+<span class="syn-keyword">include</span> Thread <span class="syn-keyword">as</span> Thread</code></pre></div>
+        <h3>Custom source modules</h3><p>For a non-built-in include, the compiler looks for a sibling file named after the module, such as <code>MathTools.fox</code> for <code>include MathTools as Tools</code>. That file's source is inlined before parsing, and nested module includes are expanded recursively.</p>
+        <div class="code-card"><div class="code-header"><span>Project layout</span><button class="copy-button" data-copy="layout-code">Copy</button></div><pre><code id="layout-code">project/
+├── main.fox
+└── MathTools.fox</code></pre></div>
+        <p class="muted-note">Custom include aliases are not namespaces. Define a function such as <code>sum_to(n)</code> in <code>MathTools.fox</code> and call it as <code>sum_to(5)</code>, not <code>Tools.sum_to(5)</code>. Cyclic includes are rejected.</p>
+      </section>
+
+      <section class="doc-section" id="console" data-search="Con console module log output stdout static values runtime integers logging">
+        <div class="section-heading"><div><span class="section-kicker">11 / BUILT-IN MODULES</span><h2><code>Con</code> — console</h2></div><span class="section-icon">›_</span></div>
+        <p>Include the module with any legal alias. The examples use <code>Console</code>.</p>
+        <div class="api-card"><div class="api-signature"><code>Console.log()</code><span class="api-tag">output</span></div><p>Writes a newline. Accepts zero or one argument. A compile-time value can be a string, number, boolean, null, array or dictionary; a runtime expression must be an integer expression.</p><div class="api-example"><code>Console.log("Hello")</code><code>Console.log(7 * 6)</code></div></div>
+        <p>There are no implemented <code>Console.clear</code>, formatted-string interpolation, or input-reading methods in the current compiler. Unsupported methods are compile errors.</p>
+      </section>
+
+      <section class="doc-section" id="windows" data-search="Win windows GUI graphical user interface window begin run label button rect text paint callback draw RGB color Win32 GDI">
+        <div class="section-heading"><div><span class="section-kicker">12 / BUILT-IN MODULES</span><h2><code>Win</code> — windows & GUI</h2></div><span class="section-icon">▣</span></div>
+        <p>The <code>Win</code> module creates native Windows GUI windows and basic controls, and offers primitive GDI rectangle/text drawing. Include it as <code>Win</code> in these examples.</p>
+        <div class="api-list">
+          <div class="api-card"><div class="api-signature"><code>Win.message_box(title, message)</code><span class="api-tag">dialog</span></div><p>Shows a Windows message box. Both parameters must be compile-time strings.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Win.window(title, width, height)</code><span class="api-tag">window</span></div><p>Creates a window and immediately enters its message loop. Use it for a simple blank window; code after this call won't run until that window closes.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Win.begin(title, width, height)</code><span class="api-tag">window</span></div><p>Creates a window but does not enter the message loop yet. Use this form when controls or paint callbacks need to be registered. Only one <code>Win.begin</code> window is currently supported.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Win.label(text, x, y, width, height)</code><span class="api-tag">control</span></div><p>Adds a native static-text control after <code>Win.begin</code>.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Win.button(text, x, y, width, height, "callback")</code><span class="api-tag">control</span></div><p>Adds a native button. The callback name is a quoted string that refers to a defined Fox function with zero parameters.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Win.rect(x, y, width, height, color)</code><span class="api-tag">drawing</span></div><p>Draws a filled rectangle. Coordinates and dimensions are integer literals; dimensions must be positive. Color is a Windows <code>COLORREF</code> value from 0 through 16777215.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Win.text(text, x, y, color)</code><span class="api-tag">drawing</span></div><p>Draws a text string at a position using the given <code>COLORREF</code>. Coordinates and color must be integer literals.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Win.paint("callback")</code><span class="api-tag">drawing</span></div><p>Registers one zero-parameter function to call on a paint message. Register after <code>Win.begin</code>; drawing calls in this function redraw the scene when Windows repaints.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Win.run()</code><span class="api-tag">event loop</span></div><p>Starts the message loop for the window created by <code>Win.begin</code>. It must be called once after creating the window.</p></div>
+        </div>
+        <h3>Minimal custom-drawn window</h3><div class="code-card"><div class="code-header"><span>gui.fox</span><button class="copy-button" data-copy="gui-code">Copy</button></div><pre><code id="gui-code"><span class="syn-keyword">include</span> Win <span class="syn-keyword">as</span> Win
+
+Win.begin(<span class="syn-string">"Fox Window"</span>, <span class="syn-number">800</span>, <span class="syn-number">600</span>)
+
+<span class="syn-keyword">variable</span> draw_scene()
+    Win.rect(<span class="syn-number">0</span>, <span class="syn-number">0</span>, <span class="syn-number">800</span>, <span class="syn-number">600</span>, <span class="syn-number">2236962</span>)
+    Win.text(<span class="syn-string">"WELCOME TO FOX"</span>, <span class="syn-number">30</span>, <span class="syn-number">30</span>, <span class="syn-number">16777215</span>)
+<span class="syn-keyword">end</span>:
+
+<span class="syn-keyword">variable</span> clicked()
+    Win.message_box(<span class="syn-string">"Fox"</span>, <span class="syn-string">"Button clicked!"</span>)
+<span class="syn-keyword">end</span>:
+
+Win.button(<span class="syn-string">"Click me"</span>, <span class="syn-number">30</span>, <span class="syn-number">80</span>, <span class="syn-number">140</span>, <span class="syn-number">40</span>, <span class="syn-string">"clicked"</span>)
+Win.paint(<span class="syn-string">"draw_scene"</span>)
+Win.run()</code></pre></div>
+        <p class="muted-note">Drawing calls are compiler-known GUI operations with literal arguments, not a general-purpose graphics API. There is no image/sprite loader, audio API, keyboard/mouse event API or animation timer in this version.</p>
+      </section>
+
+      <section class="doc-section" id="threads" data-search="Thread concurrency start wait background worker zero-parameter functions CreateThread sync race shared state">
+        <div class="section-heading"><div><span class="section-kicker">13 / BUILT-IN MODULES</span><h2><code>Thread</code> — concurrency</h2></div><span class="section-icon">⇄</span></div>
+        <p><code>Thread.start</code> launches a zero-parameter Fox function on a Windows thread. <code>Thread.wait</code> waits for started worker threads to finish.</p>
+        <div class="code-card"><div class="code-header"><span>threads.fox</span><button class="copy-button" data-copy="threads-code">Copy</button></div><pre><code id="threads-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+<span class="syn-keyword">include</span> Thread <span class="syn-keyword">as</span> Thread
+
+<span class="syn-keyword">variable</span> worker()
+    Console.log(<span class="syn-string">"Worker started"</span>)
+<span class="syn-keyword">end</span>:
+
+Thread.start(<span class="syn-string">"worker"</span>)
+Thread.wait()</code></pre></div>
+        <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>Keep shared state simple</strong><p>The current runtime does not provide mutexes, locks, channels or an atomic-variable API. Concurrent access to shared mutable state can race. Worker functions must have zero parameters.</p></div></div>
+      </section>
+
+      <section class="doc-section" id="errors" data-search="errors compiler diagnostics line column unknown variable type mismatch invalid include syntax division by zero">
+        <div class="section-heading"><div><span class="section-kicker">14 / TROUBLESHOOTING</span><h2>Compiler errors</h2></div><span class="section-icon">!</span></div>
+        <p>Source errors are reported as <code>line N: message (column C)</code> when the parser can identify a location. The CLI writes <code>Fox compiler error:</code> to standard error and exits with a non-zero status.</p>
+        <div class="table-wrap"><table><thead><tr><th>Message pattern</th><th>Common cause</th><th>Fix</th></tr></thead><tbody><tr><td><code>unknown variable</code></td><td>Name is not declared or is out of scope.</td><td>Check spelling and declaration order.</td></tr><tr><td><code>expected a new line</code></td><td>Control-flow or function header has trailing syntax.</td><td>Put the block body on the following line.</td></tr><tr><td><code>missing 'end:'</code></td><td>A function or loop/branch wasn't closed.</td><td>Add the matching <code>end:</code>.</td></tr><tr><td><code>type mismatch</code></td><td>A compile-time variable was assigned a value of a different type.</td><td>Keep the declared type consistent.</td></tr><tr><td><code>division by zero</code></td><td>A compile-time division or remainder uses zero.</td><td>Guard the operation or correct the divisor.</td></tr><tr><td><code>unsupported syntax</code></td><td>The source uses syntax outside the implemented grammar.</td><td>Check this reference's limitations and examples.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="doc-section" id="limitations" data-search="limitations unsupported features runtime dynamic strings floats collections logical operators input functions local constants GUI dynamic args arrays">
+        <div class="section-heading"><div><span class="section-kicker">15 / LANGUAGE STATUS</span><h2>Current limitations</h2></div><span class="section-icon">◷</span></div>
+        <p>Fox is an evolving compiler, so some features that look familiar from other languages are not yet implemented. These are current implementation constraints, not recommended language design.</p>
+        <div class="limit-grid"><div class="limit-item"><span class="limit-icon">01</span><div><strong>No runtime strings or collections</strong><p>String/array/dictionary values are compile-time only. Runtime variables, function arguments and return values are integer-based.</p></div></div><div class="limit-item"><span class="limit-icon">02</span><div><strong>No logical operators</strong><p>There is no <code>and</code>/<code>or</code>/<code>not</code> or <code>&amp;&amp;</code>/<code>||</code> expression support. Chained comparisons are rejected.</p></div></div><div class="limit-item"><span class="limit-icon">03</span><div><strong>No runtime declaration in top-level blocks</strong><p>Declare globals before top-level runtime <code>if</code>, <code>while</code> or <code>for</code> blocks.</p></div></div><div class="limit-item"><span class="limit-icon">04</span><div><strong>Basic GUI only</strong><p>Native controls and rectangle/text drawing are supported, but there are no image assets, sound, general event input or timer-based animation APIs.</p></div></div><div class="limit-item"><span class="limit-icon">05</span><div><strong>Limited thread coordination</strong><p>Threads can be started and joined, but there are no built-in locks, message queues or safe shared-state primitives.</p></div></div><div class="limit-item"><span class="limit-icon">06</span><div><strong>One window and paint callback</strong><p>The current compiler accepts one <code>Win.begin</code> window and one <code>Win.paint</code> callback per program.</p></div></div></div>
+      </section>
+
+      <section class="doc-section" id="examples" data-search="examples complete counter calculator function collections gui thread quick sample">
+        <div class="section-heading"><div><span class="section-kicker">16 / COOKBOOK</span><h2>Examples</h2></div><span class="section-icon">⌘</span></div>
+        <h3>Runtime counter</h3><div class="code-card"><div class="code-header"><span>counter.fox</span><button class="copy-button" data-copy="counter-code">Copy</button></div><pre><code id="counter-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+
+<span class="syn-keyword">variable</span> count = <span class="syn-number">1</span>
+<span class="syn-keyword">while</span> count <= <span class="syn-number">5</span>
+    Console.log(count)
+    count += <span class="syn-number">1</span>
+<span class="syn-keyword">end</span>:
+Console.log(<span class="syn-string">"Done"</span>)</code></pre></div>
+        <h3>Factorial function</h3><div class="code-card"><div class="code-header"><span>factorial.fox</span><button class="copy-button" data-copy="factorial-code">Copy</button></div><pre><code id="factorial-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+
+<span class="syn-keyword">variable</span> factorial(n)
+    <span class="syn-keyword">variable</span> result = <span class="syn-number">1</span>
+    <span class="syn-keyword">for</span> i = <span class="syn-number">1</span> to n + <span class="syn-number">1</span>
+        result *= i
+    <span class="syn-keyword">end</span>:
+    <span class="syn-keyword">return</span> result
+<span class="syn-keyword">end</span>:
+
+Console.log(factorial(<span class="syn-number">5</span>))  <span class="syn-comment"># 120</span></code></pre></div>
+        <div class="callout callout-blue"><span class="callout-symbol">↳</span><div><strong>Ready to experiment?</strong><p>Copy any example into a <code>.fox</code> file and compile it with your installed Fox command. This site is a reference and does not execute Fox code in the browser.</p></div></div>
+      </section>
+
+      <footer class="site-footer" id="reference"><div class="footer-brand"><span class="fox-mark">ƒ</span><strong>Fox<span class="brand-light">Docs</span></strong></div><p>Language documentation generated from the available Fox compiler source.</p><div class="footer-meta"><span>Windows x86-64 · PE32+</span><span>Plain HTML · CSS · JavaScript</span><a href="#top">Back to top ↑</a></div></footer>
+      <div id="no-results" class="no-results" hidden><strong>No matching documentation</strong><span>Try a different search term or clear the search box.</span></div>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
