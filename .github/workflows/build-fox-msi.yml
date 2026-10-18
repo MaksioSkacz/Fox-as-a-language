@@ -1,0 +1,75 @@
+name: Build Fox Windows MSI
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "installer/**"
+      - ".github/workflows/build-fox-msi.yml"
+      - "fox.py"
+      - "helpers/**"
+    branches: [main]
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build-msi:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyInstaller and WiX
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip pyinstaller
+          dotnet tool install --global wix --version 5.*
+          wix extension add WixToolset.Util.wixext/5.*
+
+      - name: Build standalone compiler
+        shell: pwsh
+        run: |
+          pyinstaller --noconfirm --clean --onefile --name fox --console --add-data "helpers;helpers" fox.py
+          if (!(Test-Path "dist/fox.exe")) { throw "PyInstaller did not produce dist/fox.exe" }
+
+      - name: Smoke test CLI
+        shell: pwsh
+        run: |
+          & "dist/fox.exe" --help
+          if ($LASTEXITCODE -ne 0) { throw "fox.exe --help failed" }
+
+      - name: Compile mouse/window demo to native PE32+
+        shell: pwsh
+        run: |
+          python fox.py installer/mouse_capture_demo.fox --compile-only -o "$env:RUNNER_TEMP\fox-mouse-smoke.exe"
+          if (!(Test-Path "$env:RUNNER_TEMP\fox-mouse-smoke.exe")) { throw "Fox native compile smoke test failed" }
+
+      - name: Build MSI
+        shell: pwsh
+        run: |
+          wix build installer/Fox.wxs -ext WixToolset.Util.wixext -d PublishDir="$((Resolve-Path dist).Path)" -arch x64 -o Fox-Setup-x64.msi
+          if (!(Test-Path "Fox-Setup-x64.msi")) { throw "WiX did not produce the MSI" }
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fox-Setup-x64
+          path: Fox-Setup-x64.msi
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Attach installer to published release
+        if: github.event_name == 'release'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" Fox-Setup-x64.msi --clobber
