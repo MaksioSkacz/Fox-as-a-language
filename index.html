@@ -29,6 +29,7 @@
         <div class="sidebar-label">GET STARTED</div>
         <a class="nav-link active" href="#overview">Overview <span class="nav-dot"></span></a>
         <a class="nav-link" href="#quickstart">Quick start</a>
+        <a class="nav-link" href="#installer">Download & install</a>
         <a class="nav-link" href="#compiler">Compiler & commands</a>
         <div class="sidebar-label">LANGUAGE GUIDE</div>
         <a class="nav-link" href="#syntax">Syntax & comments</a>
@@ -42,7 +43,10 @@
         <div class="sidebar-label">BUILT-IN MODULES</div>
         <a class="nav-link" href="#console">Con — console</a>
         <a class="nav-link" href="#windows">Win — windows & GUI</a>
+        <a class="nav-link" href="#mouse">Mouse — input & capture</a>
         <a class="nav-link" href="#threads">Thread — concurrency</a>
+        <div class="sidebar-label">HELPER LIBRARY</div>
+        <a class="nav-link" href="#studio">Renderer · Plot · OS</a>
         <div class="sidebar-label">REFERENCE</div>
         <a class="nav-link" href="#errors">Compiler errors</a>
         <a class="nav-link" href="#limitations">Current limitations</a>
@@ -57,8 +61,8 @@
         <div class="eyebrow"><span class="eyebrow-line"></span> THE FOX LANGUAGE</div>
         <h1>Write Fox.<br><span>Compile native.</span></h1>
         <p class="hero-copy">Fox is a small programming language with a Python-written compiler that emits Windows x86-64 machine code into a native PE32+ executable. These docs describe the implemented language—not a wish-list of future features.</p>
-        <div class="hero-actions"><a class="button button-primary" href="#quickstart">Get started <span>→</span></a><a class="button button-secondary" href="#reference">Explore the reference</a></div>
-        <div class="hero-stats"><div><strong>Native</strong><span>PE32+ executable output</span></div><div><strong>3 built-ins</strong><span>Con · Win · Thread</span></div><div><strong>.fox</strong><span>Source file extension</span></div></div>
+        <div class="hero-actions"><a class="button button-primary" href="#installer">Download Fox for Windows <span>→</span></a><a class="button button-secondary" href="#reference">Explore the reference</a></div>
+        <div class="hero-stats"><div><strong>Native</strong><span>PE32+ executable output</span></div><div><strong>Game-ready APIs</strong><span>Mouse · framebuffer · OS</span></div><div><strong>.fox</strong><span>Source file extension</span></div></div>
         <div class="hero-code-window" aria-label="Fox code example">
           <div class="window-bar"><div class="window-dots"><i></i><i></i><i></i></div><span>hello.fox</span><button class="copy-button" data-copy="hero-snippet">Copy</button></div>
           <pre><code id="hero-snippet"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
@@ -79,6 +83,14 @@ Console.log(<span class="syn-number">2</span> + <span class="syn-number">3</span
         <p>From PowerShell, use the <code>fox</code> command configured on your machine. The commands below assume it is available on <code>PATH</code> or defined in your PowerShell profile.</p>
         <div class="command-grid"><div class="command-card"><span class="command-title">Compile and run</span><code>fox hello.fox</code><button class="copy-button" data-copy="cmd-run">Copy</button><span id="cmd-run" class="visually-hidden">fox hello.fox</span></div><div class="command-card"><span class="command-title">Compile only</span><code>fox hello.fox --compile-only</code><button class="copy-button" data-copy="cmd-compile">Copy</button><span id="cmd-compile" class="visually-hidden">fox hello.fox --compile-only</span></div><div class="command-card"><span class="command-title">Choose output path</span><code>fox hello.fox -o build\hello.exe</code><button class="copy-button" data-copy="cmd-output">Copy</button><span id="cmd-output" class="visually-hidden">fox hello.fox -o build\hello.exe</span></div></div>
         <div class="callout callout-blue"><span class="callout-symbol">↳</span><div><strong>Remember</strong><p>With <code>--compile-only</code>, the compiler writes a sibling <code>.exe</code> unless <code>-o</code> is specified. Without <code>--compile-only</code>, the compiler launches the newly built executable.</p></div></div>
+      </section>
+
+      <section class="doc-section" id="installer" data-search="download install MSI Windows PowerShell PATH command line compiler">
+        <div class="section-heading"><div><span class="section-kicker">WINDOWS INSTALLER</span><h2>Install Fox on Windows</h2></div><span class="section-icon">↓</span></div>
+        <p>The Fox Setup MSI installs the compiler for your Windows user and adds its folder to your user-level <code>PATH</code>, without changing the system-wide PATH.</p>
+        <div class="hero-actions"><a class="button button-primary" href="https://github.com/MaksioSkacz/Fox-as-a-language/releases/latest/download/Fox-Setup-x64.msi">Download Fox-Setup-x64.msi <span>↓</span></a><a class="button button-secondary" href="https://github.com/MaksioSkacz/Fox-as-a-language/releases">All releases</a></div>
+        <div class="mini-grid"><div class="mini-card"><strong>1. Install</strong><p>Open the MSI and follow the setup prompts. It installs to your local user profile.</p></div><div class="mini-card"><strong>2. Reopen PowerShell</strong><p>Open a fresh terminal so it reads the updated user PATH.</p></div><div class="mini-card"><strong>3. Compile and run</strong><p>Run <code>fox hello.fox</code> from the source folder.</p></div><div class="mini-card"><strong>4. Check the CLI</strong><p>Run <code>fox --help</code> to see supported arguments.</p></div></div>
+        <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>Unsigned installer</strong><p>The MSI may show a Windows SmartScreen warning until the package is digitally signed. The download link works after the GitHub Release build succeeds.</p></div></div>
       </section>
 
       <section class="doc-section" id="compiler" data-search="compiler command line flags output exe compile-only -o run target platform PE32+ Python">
@@ -229,11 +241,13 @@ Console.log(items)</code></pre></div>
 
       <section class="doc-section" id="windows" data-search="Win windows GUI graphical user interface window begin run label button rect text paint callback draw RGB color Win32 GDI">
         <div class="section-heading"><div><span class="section-kicker">12 / BUILT-IN MODULES</span><h2><code>Win</code> — windows & GUI</h2></div><span class="section-icon">▣</span></div>
-        <p>The <code>Win</code> module creates native Windows GUI windows and basic controls, and offers primitive GDI rectangle/text drawing. Include it as <code>Win</code> in these examples.</p>
+        <p>The <code>Win</code> module creates native Windows GUI windows and basic controls, plus GDI drawing and framebuffer presentation. The timer paint path suppresses background erasure to prevent white flashes between frames.</p>
         <div class="api-list">
           <div class="api-card"><div class="api-signature"><code>Win.message_box(title, message)</code><span class="api-tag">dialog</span></div><p>Shows a Windows message box. Both parameters must be compile-time strings.</p></div>
           <div class="api-card"><div class="api-signature"><code>Win.window(title, width, height)</code><span class="api-tag">window</span></div><p>Creates a window and immediately enters its message loop. Use it for a simple blank window; code after this call won't run until that window closes.</p></div>
           <div class="api-card"><div class="api-signature"><code>Win.begin(title, width, height)</code><span class="api-tag">window</span></div><p>Creates a window but does not enter the message loop yet. Use this form when controls or paint callbacks need to be registered. Only one <code>Win.begin</code> window is currently supported.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Win.maximize()</code><span class="api-tag">window</span></div><p>Maximizes the window created by <code>Win.begin</code>.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Win.set_resizable(true_or_false)</code><span class="api-tag">window</span></div><p>Enables or disables resizing. Pass a boolean literal, such as <code>false</code>.</p></div>
           <div class="api-card"><div class="api-signature"><code>Win.label(text, x, y, width, height)</code><span class="api-tag">control</span></div><p>Adds a native static-text control after <code>Win.begin</code>.</p></div>
           <div class="api-card"><div class="api-signature"><code>Win.button(text, x, y, width, height, "callback")</code><span class="api-tag">control</span></div><p>Adds a native button. The callback name is a quoted string that refers to a defined Fox function with zero parameters.</p></div>
           <div class="api-card"><div class="api-signature"><code>Win.rect(x, y, width, height, color)</code><span class="api-tag">drawing</span></div><p>Draws a filled rectangle. Coordinates and dimensions are integer literals; dimensions must be positive. Color is a Windows <code>COLORREF</code> value from 0 through 16777215.</p></div>
@@ -260,6 +274,62 @@ Win.run()</code></pre></div>
         <p class="muted-note">Drawing calls are compiler-known GUI operations with literal arguments, not a general-purpose graphics API. There is no image/sprite loader, audio API, keyboard/mouse event API or animation timer in this version.</p>
       </section>
 
+      <section class="doc-section" id="mouse" data-search="Mouse input capture hide show cursor position relative delta first person FPS">
+        <div class="section-heading"><div><span class="section-kicker">13 / BUILT-IN MODULES</span><h2><code>Mouse</code> — cursor & relative input</h2></div><span class="section-icon">⌖</span></div>
+        <p>The built-in Mouse module is designed for games and custom-drawn windows. Capture clips the cursor to the client area, and relative movement deltas support first-person camera controls.</p>
+        <div class="api-list">
+          <div class="api-card"><div class="api-signature"><code>Mouse.capture(true_or_false)</code><span class="api-tag">capture</span></div><p>Captures/clips the cursor to the Fox window or releases it. Focus changes release or restore capture.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Mouse.hide() / Mouse.show()</code><span class="api-tag">cursor</span></div><p>Hides or restores the Windows cursor.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Mouse.update()</code><span class="api-tag">input</span></div><p>Updates position and frame-to-frame deltas. Call before reading movement for each update tick.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Mouse.x() / Mouse.y()</code><span class="api-tag">position</span></div><p>Reads the latest cursor position relative to the client area.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Mouse.delta_x() / Mouse.delta_y()</code><span class="api-tag">relative</span></div><p>Reads horizontal and vertical movement since the previous Mouse.update().</p></div>
+        </div>
+        <div class="code-card"><div class="code-header"><span>mouse_camera.fox</span><button class="copy-button" data-copy="mouse-camera-code">Copy</button></div><pre><code id="mouse-camera-code"><span class="syn-keyword">include</span> Win <span class="syn-keyword">as</span> Win
+<span class="syn-keyword">include</span> Mouse <span class="syn-keyword">as</span> Mouse
+
+Win.begin(<span class="syn-string">"Fox Camera"</span>, <span class="syn-number">1280</span>, <span class="syn-number">720</span>)
+Win.maximize()
+Win.set_resizable(<span class="syn-keyword">false</span>)
+<span class="syn-keyword">variable</span> update()
+    Mouse.update()
+    <span class="syn-keyword">variable</span> dx = Mouse.delta_x()
+    <span class="syn-keyword">variable</span> dy = Mouse.delta_y()
+<span class="syn-keyword">end</span>:
+Mouse.capture(<span class="syn-keyword">true</span>)
+Mouse.hide()
+Win.paint(<span class="syn-string">"update"</span>)
+Win.run()</code></pre></div>
+        <p class="muted-note">Use capture during gameplay and release it when returning to menus. Keep an exit path such as Alt+F4 while developing.</p>
+      </section>
+
+      <section class="doc-section" id="studio" data-search="Renderer Plot OS helpers framebuffer pixels triangle circle line cube mathematical plots filesystem save read file directory">
+        <div class="section-heading"><div><span class="section-kicker">SOURCE HELPER LIBRARY</span><h2>Renderer, Plot & OS helpers</h2></div><span class="section-icon">▦</span></div>
+        <p>These modules live in the project's helpers/ directory and are expanded into the same native executable as the calling Fox source.</p>
+        <div class="api-list">
+          <div class="api-card"><div class="api-signature"><code>Renderer.create(width, height)</code><span class="api-tag">framebuffer</span></div><p>Creates a pixel buffer which can be drawn to and presented using Win.pixels(frame, width, height).</p></div>
+          <div class="api-card"><div class="api-signature"><code>Renderer.clear / pixel / rect / line</code><span class="api-tag">drawing</span></div><p>Clears the buffer and draws pixels, filled or outlined rectangles, and line segments.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Renderer.triangle / circle / fill_circle / cube</code><span class="api-tag">geometry</span></div><p>Raster primitives for interfaces, plots, and simple software-rendered scenes.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Plot.grid / Plot.sine / Plot.cosine</code><span class="api-tag">plotting</span></div><p>Draws coordinate grids and mathematical curves into a renderer buffer.</p></div>
+          <div class="api-card"><div class="api-signature"><code>OS.mkdir / exists / copy / move / delete</code><span class="api-tag">filesystem</span></div><p>Provides basic directory and file operations. Status values use integer success/failure results.</p></div>
+          <div class="api-card"><div class="api-signature"><code>OS.save_text / append_text / read_text</code><span class="api-tag">files</span></div><p>Creates, appends and reads UTF-8 text files.</p></div>
+        </div>
+        <div class="code-card"><div class="code-header"><span>renderer.fox</span><button class="copy-button" data-copy="renderer-code">Copy</button></div><pre><code id="renderer-code"><span class="syn-keyword">include</span> Win <span class="syn-keyword">as</span> Win
+<span class="syn-keyword">include</span> Renderer <span class="syn-keyword">as</span> Renderer
+<span class="syn-keyword">include</span> Color <span class="syn-keyword">as</span> Color
+<span class="syn-keyword">constant</span> W = <span class="syn-number">960</span>
+<span class="syn-keyword">constant</span> H = <span class="syn-number">640</span>
+<span class="syn-keyword">variable</span> frame = Renderer.create(W, H)
+Win.begin(<span class="syn-string">"Fox Renderer"</span>, W, H)
+<span class="syn-keyword">variable</span> draw_scene()
+    Renderer.clear(frame, W, H, Color.dib_rgb(<span class="syn-number">12</span>, <span class="syn-number">16</span>, <span class="syn-number">30</span>))
+    Renderer.circle(frame, W, H, <span class="syn-number">480</span>, <span class="syn-number">320</span>, <span class="syn-number">100</span>, Color.dib_rgb(<span class="syn-number">255</span>, <span class="syn-number">80</span>, <span class="syn-number">180</span>))
+    Win.pixels(frame, W, H)
+<span class="syn-keyword">end</span>:
+Win.paint(<span class="syn-string">"draw_scene"</span>)
+Win.run()</code></pre></div>
+        <div class="callout callout-blue"><span class="callout-symbol">↳</span><div><strong>Related examples</strong><p>The source kit includes a spinning cube, math plotter, custom-function plot, filesystem examples and the FoxCraft3D voxel sandbox.</p></div></div>
+      </section>
+
       <section class="doc-section" id="threads" data-search="Thread concurrency start wait background worker zero-parameter functions CreateThread sync race shared state">
         <div class="section-heading"><div><span class="section-kicker">13 / BUILT-IN MODULES</span><h2><code>Thread</code> — concurrency</h2></div><span class="section-icon">⇄</span></div>
         <p><code>Thread.start</code> launches a zero-parameter Fox function on a Windows thread. <code>Thread.wait</code> waits for started worker threads to finish.</p>
@@ -284,7 +354,7 @@ Thread.wait()</code></pre></div>
       <section class="doc-section" id="limitations" data-search="limitations unsupported features runtime dynamic strings floats collections logical operators input functions local constants GUI dynamic args arrays">
         <div class="section-heading"><div><span class="section-kicker">15 / LANGUAGE STATUS</span><h2>Current limitations</h2></div><span class="section-icon">◷</span></div>
         <p>Fox is an evolving compiler, so some features that look familiar from other languages are not yet implemented. These are current implementation constraints, not recommended language design.</p>
-        <div class="limit-grid"><div class="limit-item"><span class="limit-icon">01</span><div><strong>No runtime strings or collections</strong><p>String/array/dictionary values are compile-time only. Runtime variables, function arguments and return values are integer-based.</p></div></div><div class="limit-item"><span class="limit-icon">02</span><div><strong>No logical operators</strong><p>There is no <code>and</code>/<code>or</code>/<code>not</code> or <code>&amp;&amp;</code>/<code>||</code> expression support. Chained comparisons are rejected.</p></div></div><div class="limit-item"><span class="limit-icon">03</span><div><strong>No runtime declaration in top-level blocks</strong><p>Declare globals before top-level runtime <code>if</code>, <code>while</code> or <code>for</code> blocks.</p></div></div><div class="limit-item"><span class="limit-icon">04</span><div><strong>Basic GUI only</strong><p>Native controls and rectangle/text drawing are supported, but there are no image assets, sound, general event input or timer-based animation APIs.</p></div></div><div class="limit-item"><span class="limit-icon">05</span><div><strong>Limited thread coordination</strong><p>Threads can be started and joined, but there are no built-in locks, message queues or safe shared-state primitives.</p></div></div><div class="limit-item"><span class="limit-icon">06</span><div><strong>One window and paint callback</strong><p>The current compiler accepts one <code>Win.begin</code> window and one <code>Win.paint</code> callback per program.</p></div></div></div>
+        <div class="limit-grid"><div class="limit-item"><span class="limit-icon">01</span><div><strong>Runtime features are typed and bounded</strong><p>The current compiler supports native numeric values, typed string operations and runtime arrays. Some literal arrays and dictionaries are still resolved at compile time.</p></div></div><div class="limit-item"><span class="limit-icon">02</span><div><strong>No logical operators</strong><p>There is no <code>and</code>/<code>or</code>/<code>not</code> or <code>&amp;&amp;</code>/<code>||</code> expression support. Chained comparisons are rejected.</p></div></div><div class="limit-item"><span class="limit-icon">03</span><div><strong>No runtime declaration in top-level blocks</strong><p>Declare globals before top-level runtime <code>if</code>, <code>while</code> or <code>for</code> blocks.</p></div></div><div class="limit-item"><span class="limit-icon">04</span><div><strong>Native GUI and software graphics</strong><p>Fox supports Win32 windows, timers, keyboard polling, mouse capture and relative deltas, plus software framebuffer rendering. It does not yet provide a GPU-backed general-purpose renderer or built-in audio system.</p></div></div><div class="limit-item"><span class="limit-icon">05</span><div><strong>Limited thread coordination</strong><p>Threads can be started and joined, but there are no built-in locks, message queues or safe shared-state primitives.</p></div></div><div class="limit-item"><span class="limit-icon">06</span><div><strong>One window and paint callback</strong><p>The current compiler accepts one <code>Win.begin</code> window and one <code>Win.paint</code> callback per program.</p></div></div></div>
       </section>
 
       <section class="doc-section" id="examples" data-search="examples complete counter calculator function collections gui thread quick sample">
