@@ -221,10 +221,11 @@ Console.log(items)</code></pre></div>
 
       <section class="doc-section" id="modules" data-search="modules include custom module source file import alias Con Win Thread library inline functions namespace">
         <div class="section-heading"><div><span class="section-kicker">10 / PROJECT STRUCTURE</span><h2>Modules & includes</h2></div><span class="section-icon">⇢</span></div>
-        <p><code>include</code> statements must appear at the top level. The three built-in modules are <code>Con</code>, <code>Win</code> and <code>Thread</code>. Each built-in module can only be included once in a source file.</p>
+        <p><code>include</code> statements must appear at the top level. The built-in modules are <code>Con</code>, <code>Win</code>, <code>Thread</code> and <code>Mouse</code>. Source helpers such as <code>Renderer</code>, <code>Plot</code> and <code>OS</code> are expanded from matching files in <code>helpers/</code>.</p>
         <div class="code-card"><div class="code-header"><span>includes.fox</span><button class="copy-button" data-copy="modules-code">Copy</button></div><pre><code id="modules-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
 <span class="syn-keyword">include</span> Win <span class="syn-keyword">as</span> Win
-<span class="syn-keyword">include</span> Thread <span class="syn-keyword">as</span> Thread</code></pre></div>
+<span class="syn-keyword">include</span> Thread <span class="syn-keyword">as</span> Thread
+<span class="syn-keyword">include</span> Mouse <span class="syn-keyword">as</span> Mouse</code></pre></div>
         <h3>Custom source modules</h3><p>For a non-built-in include, the compiler looks for a sibling file named after the module, such as <code>MathTools.fox</code> for <code>include MathTools as Tools</code>. That file's source is inlined before parsing, and nested module includes are expanded recursively.</p>
         <div class="code-card"><div class="code-header"><span>Project layout</span><button class="copy-button" data-copy="layout-code">Copy</button></div><pre><code id="layout-code">project/
 ├── main.fox
@@ -297,13 +298,13 @@ Win.set_resizable(<span class="syn-keyword">false</span>)
 <span class="syn-keyword">end</span>:
 Mouse.capture(<span class="syn-keyword">true</span>)
 Mouse.hide()
-Win.paint(<span class="syn-string">"update"</span>)
+Win.timer(<span class="syn-string">"update"</span>, <span class="syn-number">16</span>)
 Win.run()</code></pre></div>
         <p class="muted-note">Use capture during gameplay and release it when returning to menus. Keep an exit path such as Alt+F4 while developing.</p>
       </section>
 
       <section class="doc-section" id="studio" data-search="Renderer Plot OS helpers framebuffer pixels triangle circle line cube mathematical plots filesystem save read file directory">
-        <div class="section-heading"><div><span class="section-kicker">SOURCE HELPER LIBRARY</span><h2>Renderer, Plot & OS helpers</h2></div><span class="section-icon">▦</span></div>
+        <div class="section-heading"><div><span class="section-kicker">14 / SOURCE HELPER LIBRARY</span><h2>Renderer, Plot & OS helpers</h2></div><span class="section-icon">▦</span></div>
         <p>These modules live in the project's helpers/ directory and are expanded into the same native executable as the calling Fox source.</p>
         <div class="api-list">
           <div class="api-card"><div class="api-signature"><code>Renderer.create(width, height)</code><span class="api-tag">framebuffer</span></div><p>Creates a pixel buffer which can be drawn to and presented using Win.pixels(frame, width, height).</p></div>
@@ -331,7 +332,7 @@ Win.run()</code></pre></div>
       </section>
 
       <section class="doc-section" id="threads" data-search="Thread concurrency start wait background worker zero-parameter functions CreateThread sync race shared state">
-        <div class="section-heading"><div><span class="section-kicker">13 / BUILT-IN MODULES</span><h2><code>Thread</code> — concurrency</h2></div><span class="section-icon">⇄</span></div>
+        <div class="section-heading"><div><span class="section-kicker">15 / BUILT-IN MODULES</span><h2><code>Thread</code> — concurrency</h2></div><span class="section-icon">⇄</span></div>
         <p><code>Thread.start</code> launches a zero-parameter Fox function on a Windows thread. <code>Thread.wait</code> waits for started worker threads to finish.</p>
         <div class="code-card"><div class="code-header"><span>threads.fox</span><button class="copy-button" data-copy="threads-code">Copy</button></div><pre><code id="threads-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
 <span class="syn-keyword">include</span> Thread <span class="syn-keyword">as</span> Thread
@@ -346,19 +347,19 @@ Thread.wait()</code></pre></div>
       </section>
 
       <section class="doc-section" id="errors" data-search="errors compiler diagnostics line column unknown variable type mismatch invalid include syntax division by zero">
-        <div class="section-heading"><div><span class="section-kicker">14 / TROUBLESHOOTING</span><h2>Compiler errors</h2></div><span class="section-icon">!</span></div>
+        <div class="section-heading"><div><span class="section-kicker">16 / TROUBLESHOOTING</span><h2>Compiler errors</h2></div><span class="section-icon">!</span></div>
         <p>Source errors are reported as <code>line N: message (column C)</code> when the parser can identify a location. The CLI writes <code>Fox compiler error:</code> to standard error and exits with a non-zero status.</p>
         <div class="table-wrap"><table><thead><tr><th>Message pattern</th><th>Common cause</th><th>Fix</th></tr></thead><tbody><tr><td><code>unknown variable</code></td><td>Name is not declared or is out of scope.</td><td>Check spelling and declaration order.</td></tr><tr><td><code>expected a new line</code></td><td>Control-flow or function header has trailing syntax.</td><td>Put the block body on the following line.</td></tr><tr><td><code>missing 'end:'</code></td><td>A function or loop/branch wasn't closed.</td><td>Add the matching <code>end:</code>.</td></tr><tr><td><code>type mismatch</code></td><td>A compile-time variable was assigned a value of a different type.</td><td>Keep the declared type consistent.</td></tr><tr><td><code>division by zero</code></td><td>A compile-time division or remainder uses zero.</td><td>Guard the operation or correct the divisor.</td></tr><tr><td><code>unsupported syntax</code></td><td>The source uses syntax outside the implemented grammar.</td><td>Check this reference's limitations and examples.</td></tr></tbody></table></div>
       </section>
 
       <section class="doc-section" id="limitations" data-search="limitations unsupported features runtime dynamic strings floats collections logical operators input functions local constants GUI dynamic args arrays">
-        <div class="section-heading"><div><span class="section-kicker">15 / LANGUAGE STATUS</span><h2>Current limitations</h2></div><span class="section-icon">◷</span></div>
+        <div class="section-heading"><div><span class="section-kicker">17 / LANGUAGE STATUS</span><h2>Current limitations</h2></div><span class="section-icon">◷</span></div>
         <p>Fox is an evolving compiler, so some features that look familiar from other languages are not yet implemented. These are current implementation constraints, not recommended language design.</p>
         <div class="limit-grid"><div class="limit-item"><span class="limit-icon">01</span><div><strong>Runtime features are typed and bounded</strong><p>The current compiler supports native numeric values, typed string operations and runtime arrays. Some literal arrays and dictionaries are still resolved at compile time.</p></div></div><div class="limit-item"><span class="limit-icon">02</span><div><strong>No logical operators</strong><p>There is no <code>and</code>/<code>or</code>/<code>not</code> or <code>&amp;&amp;</code>/<code>||</code> expression support. Chained comparisons are rejected.</p></div></div><div class="limit-item"><span class="limit-icon">03</span><div><strong>No runtime declaration in top-level blocks</strong><p>Declare globals before top-level runtime <code>if</code>, <code>while</code> or <code>for</code> blocks.</p></div></div><div class="limit-item"><span class="limit-icon">04</span><div><strong>Native GUI and software graphics</strong><p>Fox supports Win32 windows, timers, keyboard polling, mouse capture and relative deltas, plus software framebuffer rendering. It does not yet provide a GPU-backed general-purpose renderer or built-in audio system.</p></div></div><div class="limit-item"><span class="limit-icon">05</span><div><strong>Limited thread coordination</strong><p>Threads can be started and joined, but there are no built-in locks, message queues or safe shared-state primitives.</p></div></div><div class="limit-item"><span class="limit-icon">06</span><div><strong>One window and paint callback</strong><p>The current compiler accepts one <code>Win.begin</code> window and one <code>Win.paint</code> callback per program.</p></div></div></div>
       </section>
 
       <section class="doc-section" id="examples" data-search="examples complete counter calculator function collections gui thread quick sample">
-        <div class="section-heading"><div><span class="section-kicker">16 / COOKBOOK</span><h2>Examples</h2></div><span class="section-icon">⌘</span></div>
+        <div class="section-heading"><div><span class="section-kicker">18 / COOKBOOK</span><h2>Examples</h2></div><span class="section-icon">⌘</span></div>
         <h3>Runtime counter</h3><div class="code-card"><div class="code-header"><span>counter.fox</span><button class="copy-button" data-copy="counter-code">Copy</button></div><pre><code id="counter-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
 
 <span class="syn-keyword">variable</span> count = <span class="syn-number">1</span>
