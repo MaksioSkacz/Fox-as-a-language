@@ -32,7 +32,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip pyinstaller
           dotnet tool install --global wix --version 5.*
-          wix extension add WixToolset.Util.wixext
+          wix extension add WixToolset.Util.wixext/5.0.2
 
       - name: Extract Fox compiler source archive
         shell: pwsh
