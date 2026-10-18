@@ -44,8 +44,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Could not extract FoxCL.7z" }
           $compiler = Get-ChildItem "$env:RUNNER_TEMP\FoxSource" -Filter "fox.py" -Recurse | Select-Object -First 1
           if (!$compiler) { throw "FoxCL.7z does not contain fox.py" }
-          $helperFolder = Join-Path $compiler.Directory.FullName "helpers"
-          if (!(Test-Path $helperFolder)) { throw "FoxCL.7z is missing the matching helpers folder" }
+          $helperDir = Get-ChildItem "$env:RUNNER_TEMP\FoxSource" -Directory -Recurse | Where-Object { $_.Name -eq "helpers" } | Select-Object -First 1
+          if (!$helperDir) {
+            Write-Host "Archive folders:"
+            Get-ChildItem "$env:RUNNER_TEMP\FoxSource" -Directory -Recurse | ForEach-Object { Write-Host $_.FullName }
+            throw "FoxCL.7z is missing a helpers folder"
+          }
+          $helperFolder = $helperDir.FullName
           "FOX_COMPILER=$($compiler.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
           "FOX_HELPERS=$helperFolder" | Out-File -FilePath $env:GITHUB_ENV -Append
 
