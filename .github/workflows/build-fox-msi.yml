@@ -34,10 +34,25 @@ jobs:
           dotnet tool install --global wix --version 5.*
           wix extension add WixToolset.Util.wixext
 
+      - name: Extract Fox compiler source archive
+        shell: pwsh
+        run: |
+          choco install 7zip -y --no-progress
+          $sevenZip = "C:\Program Files\7-Zip\7z.exe"
+          if (!(Test-Path $sevenZip)) { throw "7-Zip was not installed" }
+          & $sevenZip x FoxCL.7z "-o$env:RUNNER_TEMP\FoxSource" -y
+          if ($LASTEXITCODE -ne 0) { throw "Could not extract FoxCL.7z" }
+          $compiler = Get-ChildItem "$env:RUNNER_TEMP\FoxSource" -Filter "fox.py" -Recurse | Select-Object -First 1
+          if (!$compiler) { throw "FoxCL.7z does not contain fox.py" }
+          $helperFolder = Join-Path $compiler.Directory.FullName "helpers"
+          if (!(Test-Path $helperFolder)) { throw "FoxCL.7z is missing the matching helpers folder" }
+          "FOX_COMPILER=$($compiler.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "FOX_HELPERS=$helperFolder" | Out-File -FilePath $env:GITHUB_ENV -Append
+
       - name: Build standalone compiler
         shell: pwsh
         run: |
-          pyinstaller --noconfirm --clean --onefile --name fox --console --add-data "helpers;helpers" fox.py
+          pyinstaller --noconfirm --clean --onefile --name fox --console --distpath "$env:GITHUB_WORKSPACE\dist" --workpath "$env:RUNNER_TEMP\pyinstaller-work" --specpath "$env:RUNNER_TEMP" --add-data "$env:FOX_HELPERS;helpers" "$env:FOX_COMPILER"
           if (!(Test-Path "dist/fox.exe")) { throw "PyInstaller did not produce dist/fox.exe" }
 
       - name: Smoke test CLI
@@ -49,8 +64,8 @@ jobs:
       - name: Compile mouse/window demo to native PE32+
         shell: pwsh
         run: |
-          python fox.py installer/mouse_capture_demo.fox --compile-only -o "$env:RUNNER_TEMP\fox-mouse-smoke.exe"
-          if (!(Test-Path "$env:RUNNER_TEMP\fox-mouse-smoke.exe")) { throw "Fox native compile smoke test failed" }
+          python "$env:FOX_COMPILER" installer/mouse_capture_demo.fox --compile-only -o "$env:RUNNER_TEMP\fox-mouse-smoke.exe"
+          if ($LASTEXITCODE -ne 0 -or !(Test-Path "$env:RUNNER_TEMP\fox-mouse-smoke.exe")) { throw "Fox source archive does not support the new mouse/window APIs yet" }
 
       - name: Build MSI
         shell: pwsh
