@@ -1,0 +1,23 @@
+include Win as Win
+include Mouse as Mouse
+
+Win.begin("Fox Mouse Capture Smoke Test", 960, 640)
+Win.maximize()
+Win.set_resizable(false)
+
+variable draw_scene()
+    Win.rect(0, 0, 960, 640, 1579032)
+    Win.text("Fox mouse/window API smoke test", 20, 20, 16777215)
+end:
+
+variable update()
+    Mouse.update()
+    variable dx = Mouse.delta_x()
+    variable dy = Mouse.delta_y()
+end:
+
+Mouse.capture(true)
+Mouse.hide()
+Win.paint("draw_scene")
+Win.timer("update", 16)
+Win.run()
