@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+  <Package Name="Fox Language" Manufacturer="MaksioSkacz" Version="0.3.0"
+           UpgradeCode="{5D8C7B91-5DA0-4C1A-B176-E652E33DF341}" Scope="perUser">
+    <SummaryInformation Description="Fox native Windows x64 compiler" Manufacturer="MaksioSkacz" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Fox is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="INSTALLFOLDER" Name="Fox" />
+    </StandardDirectory>
+    <Feature Id="MainFeature" Title="Fox Compiler" Level="1">
+      <ComponentRef Id="FoxExecutable" />
+    </Feature>
+    <Component Id="FoxExecutable" Directory="INSTALLFOLDER" Guid="{481F3C17-9CE1-4ACF-BC92-2AE7B9D2017A}">
+      <File Id="FoxExeFile" Source="$(var.PublishDir)\fox.exe" KeyPath="yes" />
+      <util:Environment Id="FoxUserPath" Name="PATH" Value="[INSTALLFOLDER]" Part="last" Action="set" System="no" Permanent="no" />
+    </Component>
+  </Package>
+</Wix>
