@@ -66,15 +66,6 @@ jobs:
           "FOX_COMPILER=$($compiler.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
           "FOX_HELPERS=$helperFolder" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Upload extracted FoxNewest source for audit
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: foxnewest-source-audit
-          path: ${{ runner.temp }}/FoxSource
-          if-no-files-found: error
-          retention-days: 1
-
       - name: Build standalone compiler
         shell: pwsh
         run: |
@@ -113,12 +104,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $tag = "v0.3.0"
+          $tag = "v0.3.1"
           gh release view $tag *> $null
           if ($LASTEXITCODE -eq 0) {
             gh release upload $tag Fox-Setup-x64.msi --clobber
           } else {
-            gh release create $tag Fox-Setup-x64.msi --title "Fox 0.3.0 for Windows" --notes-file CHANGELOG.md
+            gh release create $tag Fox-Setup-x64.msi --title "Fox 0.3.1 for Windows" --notes-file CHANGELOG.md
           }
 
       - name: Attach installer to the release that triggered this run
