@@ -4,11 +4,19 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - "FoxNewest.7z"
       - "installer/**"
       - ".github/workflows/build-fox-msi.yml"
       - "fox.py"
       - "helpers/**"
     branches: [main]
+  pull_request:
+    paths:
+      - "FoxNewest.7z"
+      - "installer/**"
+      - ".github/workflows/build-fox-msi.yml"
+      - "fox.py"
+      - "helpers/**"
   release:
     types: [published]
 
@@ -34,25 +42,38 @@ jobs:
           dotnet tool install --global wix --version 5.*
           wix extension add WixToolset.Util.wixext/5.0.2
 
-      - name: Extract Fox compiler source archive
+      - name: Extract current Fox compiler source archive
         shell: pwsh
         run: |
           choco install 7zip -y --no-progress
           $sevenZip = "C:\Program Files\7-Zip\7z.exe"
           if (!(Test-Path $sevenZip)) { throw "7-Zip was not installed" }
-          & $sevenZip x FoxCL.7z "-o$env:RUNNER_TEMP\FoxSource" -y
-          if ($LASTEXITCODE -ne 0) { throw "Could not extract FoxCL.7z" }
-          $compiler = Get-ChildItem "$env:RUNNER_TEMP\FoxSource" -Filter "fox.py" -Recurse | Select-Object -First 1
-          if (!$compiler) { throw "FoxCL.7z does not contain fox.py" }
-          $helperDir = Get-ChildItem "$env:RUNNER_TEMP\FoxSource" -Directory -Recurse | Where-Object { $_.Name -eq "helpers" } | Select-Object -First 1
+          if (!(Test-Path "FoxNewest.7z")) { throw "FoxNewest.7z is missing; refusing to fall back to the backup archive." }
+          $sourceRoot = "$env:RUNNER_TEMP\FoxSource"
+          New-Item -ItemType Directory -Force -Path $sourceRoot | Out-Null
+          & $sevenZip x "FoxNewest.7z" "-o$sourceRoot" -y
+          if ($LASTEXITCODE -ne 0) { throw "Could not extract FoxNewest.7z" }
+          $compiler = Get-ChildItem $sourceRoot -Filter "fox.py" -File -Recurse | Select-Object -First 1
+          if (!$compiler) { throw "FoxNewest.7z does not contain fox.py" }
+          $helperDir = Get-ChildItem $sourceRoot -Directory -Recurse | Where-Object { $_.Name -eq "helpers" } | Select-Object -First 1
           if (!$helperDir) {
             Write-Host "Archive folders:"
-            Get-ChildItem "$env:RUNNER_TEMP\FoxSource" -Directory -Recurse | ForEach-Object { Write-Host $_.FullName }
-            throw "FoxCL.7z is missing a helpers folder"
+            Get-ChildItem $sourceRoot -Directory -Recurse | ForEach-Object { Write-Host $_.FullName }
+            throw "FoxNewest.7z is missing a helpers folder"
           }
           $helperFolder = $helperDir.FullName
+          "FOX_SOURCE_ROOT=$sourceRoot" | Out-File -FilePath $env:GITHUB_ENV -Append
           "FOX_COMPILER=$($compiler.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
           "FOX_HELPERS=$helperFolder" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Upload extracted FoxNewest source for audit
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: foxnewest-source-audit
+          path: ${{ env.FOX_SOURCE_ROOT }}
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Build standalone compiler
         shell: pwsh
@@ -70,7 +91,7 @@ jobs:
         shell: pwsh
         run: |
           python "$env:FOX_COMPILER" installer/mouse_capture_demo.fox --compile-only -o "$env:RUNNER_TEMP\fox-mouse-smoke.exe"
-          if ($LASTEXITCODE -ne 0 -or !(Test-Path "$env:RUNNER_TEMP\fox-mouse-smoke.exe")) { throw "Fox source archive does not support the new mouse/window APIs yet" }
+          if ($LASTEXITCODE -ne 0 -or !(Test-Path "$env:RUNNER_TEMP\fox-mouse-smoke.exe")) { throw "FoxNewest.7z does not support the mouse/window demo yet" }
 
       - name: Build MSI
         shell: pwsh
@@ -87,7 +108,7 @@ jobs:
           retention-days: 30
 
       - name: Publish or refresh the stable installer release
-        if: github.event_name != 'release'
+        if: github.event_name != 'release' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
