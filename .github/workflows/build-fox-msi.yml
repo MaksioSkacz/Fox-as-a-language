@@ -71,7 +71,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: foxnewest-source-audit
-          path: ${{ env.FOX_SOURCE_ROOT }}
+          path: ${{ runner.temp }}/FoxSource
           if-no-files-found: error
           retention-days: 1
 
