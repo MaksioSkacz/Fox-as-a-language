@@ -4,17 +4,21 @@ The public documentation site for the evolving native Windows x86-64 compiler.
 
 ## Website
 
-Open the live site: https://maksioskacz.github.io/Fox-as-a-language/
+- Main language guide: https://maksioskacz.github.io/Fox-as-a-language/
+- Graphics and helper API reference: https://maksioskacz.github.io/Fox-as-a-language/api-reference.html
 
 ## Current compiler capabilities
 
-- Python-written compiler emits native Windows x86-64 PE32+ executables.
-- Native integer and binary64 numeric runtime, typed function handling, and runtime arrays.
-- Native Win32 windows, paint/timer callbacks, background-erasure suppression to reduce white-frame flicker, maximize and non-resizable-window controls.
-- Built-in mouse capture, cursor visibility, client-relative position and per-update movement deltas for first-person controls.
-- Source helper modules in `helpers/`: Renderer, Plot, OS, Math, vectors/matrices/quaternions, geometry, camera, physics, collision and raycast utilities.
-- A small FoxCraft3D first-person voxel sandbox and examples for plotting, rendering, filesystem operations and native windows.
-- A VS Code extension with Fox syntax highlighting and language configuration.
+- Python-written compiler emits native Windows x86-64 PE32+ executables by generating machine code directly; installed programs do not need Python.
+- Mutable runtime scalar support for signed integers, IEEE-754 binary64 floats, booleans, and typed strings; typed function parameters/returns; numeric exponentiation with `^`.
+- Native Win32 windows and controls, paint/timer callbacks, native GDI drawing, RGB framebuffer blitting, maximize/non-resizable window controls, and mouse capture/relative cursor deltas.
+- Native `GPU` helper using WGL and the system OpenGL 1.1 fixed-function API, with immediate-mode geometry, display lists, textures and driver information.
+- Experimental `Vulkan` device probe and Win32 surface/swapchain clear-and-present test. It is not yet a mesh/shader renderer.
+- Source helper modules under `helpers/`: software framebuffer renderer, plotting, filesystem helpers, math, vectors/matrix components/quaternions, camera, physics, geometry, collision/raycast, pseudo-random generator, runtime arrays and voxel-world storage.
+- FoxCraft3D first-person voxel sandbox, GPU cube and texture examples, Vulkan clear demo, plotting, filesystem, mouse and native-window examples.
+- VS Code extension with Fox syntax highlighting and language configuration.
+
+The exact API and current graphics limits are documented in the [graphics & helper API reference](https://maksioskacz.github.io/Fox-as-a-language/api-reference.html). Normal arrays/dictionaries remain compile-time values; use `RuntimeArray`/ `World3D` for mutable native numeric buffers.
 
 ## Install the Windows command-line compiler
 
@@ -32,15 +36,18 @@ The MSI packages the compiler into a standalone `fox.exe`; Python is not require
 
 ## Build from source
 
-The latest compiler source and helper modules are bundled into the MSI build workflow source archive. Keep `fox.py` beside the matching `helpers/` directory when invoking the compiler directly with Python.
+The Windows MSI workflow extracts **`FoxNewest.7z`** as its source of truth. It deliberately does not fall back to `FoxCL.7z`, which is a backup archive. Keep `fox.py` beside the matching `helpers/` directory when invoking the compiler directly with Python.
+
+The MSI is versioned independently from the language docs. The workflow builds a standalone executable with PyInstaller, smoke-tests the CLI, compiles the mouse/window demo to a native executable, then produces the per-user WiX MSI. Releases are only published from the main branch after the build succeeds.
 
 ## Documentation files
 
-- `index.html` — guide and API reference
+- `index.html` — language guide
+- `api-reference.html` — OpenGL, Vulkan and source-helper API reference
 - `styles.css` — responsive themes and layout
 - `app.js` — search, navigation, theme preference and code-copy behavior
-- `CHANGELOG.md` — recent language/compiler changes
+- `CHANGELOG.md` — release/compiler changes
 - `.github/workflows/build-fox-msi.yml` — Windows installer build and release workflow
-- `installer/Fox.wxs` — per-user MSI definition
+- `installer/Fox.wxs` — per-user MSI definition and user PATH integration
 
-The web page is plain HTML, CSS and JavaScript; it needs no build step.
+The site is plain HTML, CSS and JavaScript and needs no build step.
