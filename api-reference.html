@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="Fox native graphics and source-helper API reference: OpenGL, experimental Vulkan, math, input, memory, world data and filesystem helpers.">
+  <title>Fox Language — Graphics & Helper API Reference</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to API reference</a>
+  <header class="topbar">
+    <div class="brand-wrap">
+      <button class="mobile-menu icon-button" id="mobile-menu" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <a class="brand" href="index.html#top" aria-label="Fox Docs home"><span class="fox-mark">ƒ</span><span>Fox<span class="brand-light">Docs</span></span></a>
+      <span class="version-tag">graphics & helper APIs</span>
+    </div>
+    <div class="top-actions">
+      <label class="search-box" for="docs-search"><span class="search-icon" aria-hidden="true">⌕</span><input id="docs-search" type="search" placeholder="Search API reference…" autocomplete="off"><kbd> / </kbd></label>
+      <button class="icon-button theme-toggle" id="theme-toggle" aria-label="Switch color theme" title="Switch color theme"><span id="theme-icon">☼</span></button>
+      <a class="github-link" href="index.html">Full language guide <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+  <div class="page-shell" id="top">
+    <aside class="sidebar" id="sidebar" aria-label="API navigation">
+      <div class="sidebar-scroll">
+        <div class="sidebar-label">API REFERENCE</div>
+        <a class="nav-link active" href="#overview">Overview <span class="nav-dot"></span></a>
+        <a class="nav-link" href="#gpu">GPU · OpenGL 1.1</a>
+        <a class="nav-link" href="#vulkan">Vulkan clear renderer</a>
+        <div class="sidebar-label">SOURCE HELPERS</div>
+        <a class="nav-link" href="#input-colors">Input, time & colors</a>
+        <a class="nav-link" href="#math">Math & geometry</a>
+        <a class="nav-link" href="#world">3D, physics & memory</a>
+        <a class="nav-link" href="#rendering-files">Rendering, plotting & files</a>
+        <a class="nav-link" href="index.html#studio">Back to renderer examples</a>
+        <div class="sidebar-note"><span class="note-icon">i</span><p>This reference is audited against the compiler and helpers shipped in <code>FoxNewest.7z</code>. Experimental features and implementation limits are marked.</p></div>
+      </div>
+      <div class="sidebar-footer"><span class="status-pip"></span> Windows x86-64 target <span class="sidebar-footer-right">PE32+</span></div>
+    </aside>
+    <main id="main" class="content">
+      <section class="hero doc-section" id="overview" data-search="graphics helper API reference FoxNewest.7z modules OpenGL Vulkan software rendering input math world filesystem">
+        <div class="eyebrow"><span class="eyebrow-line"></span> FOX SOURCE API</div>
+        <h1>Graphics &<br><span>helper reference.</span></h1>
+        <p class="hero-copy">A practical index of the graphics backends and helper modules available in the current source archive. Fox still compiles to native Windows x86-64 PE32+; the helper modules are expanded into the program at compile time.</p>
+        <div class="hero-actions"><a class="button button-primary" href="#gpu">OpenGL API <span>→</span></a><a class="button button-secondary" href="#world">All helper families</a></div>
+        <div class="hero-stats"><div><strong>OpenGL 1.1</strong><span>Native WGL context</span></div><div><strong>Vulkan</strong><span>Early clear-and-present path</span></div><div><strong>helpers/</strong><span>Source-expanded libraries</span></div></div>
+        <div class="callout callout-blue"><span class="callout-symbol">↳</span><div><strong>How to include a helper</strong><p>For example, <code>include Vector3 as V3</code> lets you call <code>V3.length(0.0, 1.0, 0.0)</code>. These modules expose ordinary functions, not vector, matrix, or class objects. For the language grammar and compiler commands, use the <a href="index.html">main language guide</a>.</p></div></div>
+      </section>
+
+      <section class="doc-section" id="gpu" data-search="GPU OpenGL WGL native hardware graphics driver vendor renderer version context triangles texture fixed function display lists depth viewport projection">
+        <div class="section-heading"><div><span class="section-kicker">01 / GRAPHICS BACKENDS</span><h2><code>GPU</code> — native OpenGL 1.1</h2></div><span class="section-icon">◇</span></div>
+        <p><code>GPU</code> wraps Windows WGL and the system <code>opengl32.dll</code>. Once a context is created, OpenGL's installed driver handles geometry rasterization; this is distinct from the CPU framebuffer exposed by <code>Renderer</code>. Call <code>Win.begin</code> first, then <code>GPU.start()</code>.</p>
+        <div class="api-list">
+          <div class="api-card"><div class="api-signature"><code>GPU.start() / GPU.shutdown() / GPU.present()</code><span class="api-tag">context</span></div><p>Creates/releases the OpenGL context and presents the rendered frame. <code>GPU.start()</code> returns <code>1</code> on success.</p></div>
+          <div class="api-card"><div class="api-signature"><code>GPU.begin_frame(r, g, b, a, width, height)</code><span class="api-tag">frame</span></div><p>Sets the viewport, clears color and depth buffers, and resets the model-view matrix. RGBA components are floats from 0 to 1; projection/camera matrices remain your responsibility.</p></div>
+          <div class="api-card"><div class="api-signature"><code>GPU.clear_color(r, g, b, a) / clear(mask) / viewport(x, y, w, h)</code><span class="api-tag">frame state</span></div><p>Sets the clear color, clears selected buffers, and sets the viewport. Common flags include <code>GPU_GL_COLOR_BUFFER_BIT</code> and <code>GPU_GL_DEPTH_BUFFER_BIT</code>.</p></div>
+          <div class="api-card"><div class="api-signature"><code>GPU.matrix_mode / load_identity / frustum / ortho / translate / rotate</code><span class="api-tag">transforms</span></div><p>Controls OpenGL's fixed-function projection and model-view matrices. The caller chooses projection, camera and object transforms.</p></div>
+          <div class="api-card"><div class="api-signature"><code>GPU.begin(mode) / color / texcoord / normal / vertex / end()</code><span class="api-tag">geometry</span></div><p>Submits immediate-mode primitives such as <code>GPU_GL_TRIANGLES</code>, <code>GPU_GL_QUADS</code>, points, strips and fans.</p></div>
+          <div class="api-card"><div class="api-signature"><code>GPU.enable / disable / cull_face / polygon_mode</code><span class="api-tag">render state</span></div><p>Toggles depth testing/culling and chooses cull face and polygon fill/line mode. Constants such as <code>GPU_GL_DEPTH_TEST</code>, <code>GPU_GL_BACK</code> and <code>GPU_GL_LINE</code> come from <code>helpers/GPU.fox</code>.</p></div>
+          <div class="api-card"><div class="api-signature"><code>GPU.gen_lists / new_list / end_list / call_list / delete_lists</code><span class="api-tag">display lists</span></div><p>Stores static immediate-mode geometry in driver-managed OpenGL display lists, replays it later, or releases the list IDs.</p></div>
+          <div class="api-card"><div class="api-signature"><code>GPU.texture_new(width, height, rgba_pointer) / texture_bind / texture_delete</code><span class="api-tag">textures</span></div><p>Uploads RGBA8 pixels from a native pointer, binds a texture, or deletes it. The source buffer must contain at least <code>width × height × 4</code> bytes and remain valid until upload returns. Pass RGBA byte order, not the DIB packed-color value.</p></div>
+          <div class="api-card"><div class="api-signature"><code>GPU.vendor / renderer / version / extensions / get_integer / get_error</code><span class="api-tag">driver query</span></div><p>Queries driver strings, one integer capability, or the OpenGL error code. Examples include <code>GPU_GL_MAX_TEXTURE_SIZE</code> and <code>GPU_GL_MAX_LIGHTS</code>. Do not use <code>get_integer</code> for multi-value queries such as the viewport.</p></div>
+        </div>
+        <h3>Minimal triangle</h3>
+        <div class="code-card"><div class="code-header"><span>gpu_triangle.fox</span><button class="copy-button" data-copy="gpu-code">Copy</button></div><pre><code id="gpu-code">include Win as Win
+include GPU as GPU
+
+Win.begin("Fox OpenGL", 800, 600)
+variable gpu_ready = GPU.start()
+if gpu_ready == 1
+    GPU.enable(GPU_GL_DEPTH_TEST)
+    GPU.matrix_mode(GPU_GL_PROJECTION)
+    GPU.load_identity()
+    GPU.ortho(-1.0, 1.0, -1.0, 1.0, -10.0, 10.0)
+end:
+
+variable draw_frame()
+    if gpu_ready == 1
+        GPU.begin_frame(0.025, 0.035, 0.07, 1.0, 800, 600)
+        GPU.begin(GPU_GL_TRIANGLES)
+        GPU.color(1.0, 0.2, 0.15, 1.0)
+        GPU.vertex(-0.6, -0.5, 0.0)
+        GPU.vertex(0.6, -0.5, 0.0)
+        GPU.vertex(0.0, 0.6, 0.0)
+        GPU.end()
+        GPU.present()
+    end:
+end:
+
+Win.paint("draw_frame")
+Win.run()
+if gpu_ready == 1
+    GPU.shutdown()
+end:</code></pre></div>
+        <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>OpenGL 1.1 scope</strong><p>This is the Windows compatibility/fixed-function API, not a modern shader pipeline. Fox does not currently expose programmable shaders, compute shaders, vertex/index-buffer objects, or standardized VRAM/temperature/power sensors. Driver acceleration depends on the installed system; <code>GPU.renderer()</code> may report a software fallback such as <code>GDI Generic</code>.</p></div></div>
+        <p class="muted-note">The archive includes <code>examples/gpu_cube.fox</code>, driver diagnostics, and texture upload smoke tests. Compile checks do not prove the code displays correctly; test context creation on a real Windows desktop with a compatible driver.</p>
+      </section>
+
+      <section class="doc-section" id="vulkan" data-search="Vulkan render_start render_frame render_shutdown device_count device_name api_version driver_version vendor_id device_id device_type swapchain clear present experimental">
+        <div class="section-heading"><div><span class="section-kicker">02 / GRAPHICS BACKENDS</span><h2><code>Vulkan</code> — probe & clear renderer</h2></div><span class="section-icon">▧</span></div>
+        <p>The <code>Vulkan</code> helper dynamically loads <code>vulkan-1.dll</code>, so it is not a mandatory import for every Fox program. Its device probe reports information about the first enumerated physical device. A separate experimental Win32 renderer creates a surface and swapchain, then clears and presents swapchain images.</p>
+        <div class="api-list">
+          <div class="api-card"><div class="api-signature"><code>Vulkan.start() / Vulkan.shutdown()</code><span class="api-tag">probe</span></div><p>Initializes/releases the loader and instance for device inspection. Check the integer result before querying details.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Vulkan.device_count() / device_name()</code><span class="api-tag">device</span></div><p>Reports enumerated devices and the selected first device's name.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Vulkan.api_version / driver_version / vendor_id / device_id / device_type / last_result</code><span class="api-tag">device info</span></div><p>Returns packed API/driver versions, vendor/device IDs, a device-type code (1 integrated, 2 discrete, 3 virtual, 4 CPU, 0 other), and the latest loader/Vulkan status.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Vulkan.render_start() / render_frame(r, g, b, a) / render_shutdown()</code><span class="api-tag">clear renderer</span></div><p>Call <code>Win.begin</code> first. <code>render_start</code> creates a Win32 surface, device, compatible graphics/present queue and swapchain. <code>render_frame</code> clears one image to RGBA float channels from 0 to 1 and presents it. Release resources with <code>render_shutdown</code>.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Vulkan.render_diagnostic()</code><span class="api-tag">diagnostics</span></div><p>Displays a popup with the last Vulkan result or custom initialization stage code.</p></div>
+        </div>
+        <div class="code-card"><div class="code-header"><span>vulkan_clear.fox</span><button class="copy-button" data-copy="vulkan-code">Copy</button></div><pre><code id="vulkan-code">include Win as Win
+include Vulkan as Vulkan
+
+Win.begin("Fox Vulkan clear test", 960, 640)
+Win.set_resizable(false)
+variable ready = Vulkan.render_start()
+
+variable redraw()
+    if ready == 1
+        Vulkan.render_frame(0.10, 0.10, 0.30, 1.0)
+    end:
+end:
+
+if ready == 1
+    Win.paint("redraw")
+    Win.timer("redraw", 16)
+    Win.run()
+else
+    Vulkan.render_diagnostic()
+end:
+Vulkan.render_shutdown()</code></pre></div>
+        <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>Not a mesh renderer yet</strong><p>The current Vulkan code is clear-and-present only. It has no shader/SPIR-V support, graphics pipeline, vertex/index buffers, depth buffer, texture sampling, materials, lighting, or swapchain recreation on resize. It waits for the queue on each frame, so this is a diagnostic foundation, not a performance renderer. <code>FoxCraft3D</code> uses OpenGL instead.</p></div></div>
+      </section>
+
+      <section class="doc-section" id="input-colors" data-search="Keyboard key W A S D arrows Space Enter escape shift ctrl mouse left right is_down pressed Time Color">
+        <div class="section-heading"><div><span class="section-kicker">03 / SOURCE HELPERS</span><h2>Input, time & colors</h2></div><span class="section-icon">⌁</span></div>
+        <div class="api-list">
+          <div class="api-card"><div class="api-signature"><code>Keyboard</code><span class="api-tag">input</span></div><p>Key constants: <code>W/A/S/D</code>, arrow keys, <code>SPACE</code>, <code>ENTER</code>, <code>ESCAPE</code>, <code>SHIFT</code>, <code>CTRL</code>, mouse buttons, <code>KEY_1</code>–<code>KEY_4</code>. <code>Keyboard.is_down(vk)</code> reads the Win32 held-key bit; <code>Keyboard.pressed(vk)</code> reads the “pressed since previous call” hint. Both return integer booleans. This is polling, not a buffered event API.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Time.seconds() / Time.elapsed_ms(start_ms)</code><span class="api-tag">timing</span></div><p>Uses Windows <code>GetTickCount</code>. Its 32-bit millisecond counter wraps after about 49.7 days; use elapsed deltas for short timers.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Color.rgb / red / green / blue / gray / dib_rgb</code><span class="api-tag">colors</span></div><p><code>rgb</code> returns a Win32 <code>COLORREF</code> for GDI drawing, with red in the low byte. <code>dib_rgb</code> returns packed <code>0x00RRGGBB</code> for <code>Win.pixels</code> framebuffer data. These formats are different; choose the method for the target API.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Random.seed(value) / next() / range(minimum, maximum)</code><span class="api-tag">random</span></div><p>Deterministic integer linear-congruential pseudo-random generator. <code>range</code> includes both endpoints; this is not cryptographically secure randomness.</p></div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="math" data-search="Math Vector3 Quaternion Matrix4 Camera3D Game Geometry Physics Collision3D Raycast3D mathematical function">
+        <div class="section-heading"><div><span class="section-kicker">04 / SOURCE HELPERS</span><h2>Math & geometry</h2></div><span class="section-icon">∑</span></div>
+        <div class="api-list">
+          <div class="api-card"><div class="api-signature"><code>Math</code><span class="api-tag">numeric</span></div><p><code>abs</code>, <code>abs_float</code>, <code>min</code>, <code>max</code>, <code>clamp</code>, <code>clamp_float</code>, <code>sign</code>, <code>square</code>, <code>pow</code>, <code>pow_float</code>, <code>pi</code>, <code>tau</code>, <code>radians</code>, <code>degrees</code>, <code>sqrt</code>, <code>sin</code>, <code>cos</code>, <code>tan</code>, <code>asin</code>, <code>acos</code>, <code>atan</code>, <code>atan2</code>, <code>exp</code>, <code>log</code>, <code>log10</code>, <code>floor</code>, <code>ceil</code>, <code>lerp</code>, <code>bmi</code>, <code>bmi_cm</code>, <code>bmi_x100</code>.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Vector3</code><span class="api-tag">3D vectors</span></div><p><code>dot(ax,ay,az,bx,by,bz)</code>, <code>cross_x/y/z(...)</code>, <code>length(x,y,z)</code>, <code>distance(x1,y1,z1,x2,y2,z2)</code>, <code>normalize_x/y/z(x,y,z)</code>, and scalar <code>lerp(a,b,amount)</code>.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Quaternion</code><span class="api-tag">rotation</span></div><p><code>length(qx,qy,qz,qw)</code>, <code>normalize_x/y/z/w(...)</code>, and <code>rotate_x/y/z(qx,qy,qz,qw,vx,vy,vz)</code>. Rotation helpers assume a unit quaternion; normalize it first if needed.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Matrix4</code><span class="api-tag">transform helpers</span></div><p><code>row_dot</code>, <code>multiply_component</code>, <code>perspective_divide</code>, <code>viewport_x</code>, <code>viewport_y</code>, <code>viewport_depth</code>, <code>translation_x/y/z</code>, <code>rotation_x_y</code> and <code>rotation_x_z</code>. These are scalar operations; there is no matrix object type or complete matrix API.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Camera3D</code><span class="api-tag">camera math</span></div><p><code>forward_x/y/z(yaw,pitch)</code>, <code>strafe_x/z(yaw)</code>, and <code>add_mouse_delta(angle,delta,sensitivity)</code>. Angles are in radians.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Game / Geometry / Physics</code><span class="api-tag">game logic</span></div><p><code>Game.clamp</code>, <code>move_axis</code>, <code>rect_overlap</code>, <code>wrap</code>, <code>deadzone</code>; <code>Geometry.between</code>, <code>overlap_1d</code>, <code>distance_squared</code>, <code>midpoint</code>; <code>Physics.gravity_step</code>, <code>position_step</code>, <code>bounce</code>, <code>distance_squared</code>, <code>approach</code>.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Collision3D / Raycast3D</code><span class="api-tag">collision tests</span></div><p><code>Collision3D.aabb</code> tests AABB overlap using centers and half-sizes and returns 1/0; <code>move_toward</code> steps a float toward a target. <code>Raycast3D.axis_near</code>, <code>axis_far</code>, and <code>aabb</code> implement slab-based ray/AABB intersection; the ray hit function returns a non-negative parameter or <code>-1.0</code> for no hit.</p></div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="world" data-search="RuntimeArray World3D memory pointer heap buffers dynamic arrays voxel world blocks chunk coord local coord cell center">
+        <div class="section-heading"><div><span class="section-kicker">05 / SOURCE HELPERS</span><h2>3D data & native memory</h2></div><span class="section-icon">▦</span></div>
+        <div class="api-list">
+          <div class="api-card"><div class="api-signature"><code>RuntimeArray</code><span class="api-tag">native buffers</span></div><p><code>create(count)</code>, <code>length(buffer)</code>, <code>get_int/get_float(buffer,index)</code>, <code>set_int/set_float(buffer,index,value)</code>, <code>free(buffer)</code>. Uses zero-based indices and native 64-bit slots. Pair setters/getters by type, check setter success (1 or 0), and free allocated buffers when done.</p></div>
+          <div class="api-card"><div class="api-signature"><code>World3D</code><span class="api-tag">voxel storage</span></div><p><code>in_bounds</code>, <code>index</code>, <code>create</code>, <code>get</code>, <code>set</code>, <code>place</code>, <code>remove</code>, <code>free</code>, <code>chunk_coord</code>, <code>local_coord</code>, <code>cell_center</code>. Creates a flat, mutable world of integer block IDs; <code>0</code> means air. You own the buffer lifetime and must call <code>free</code>.</p></div>
+        </div>
+        <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>Runtime memory vs. literal collections</strong><p>Fox array and dictionary literals are currently compiler-time values. Use <code>RuntimeArray</code> or <code>World3D</code> for numeric storage that changes while a compiled program runs. Returned buffer handles are opaque integer pointers, not ordinary arrays.</p></div></div>
+      </section>
+
+      <section class="doc-section" id="rendering-files" data-search="Renderer Plot OS Tkinter software framebuffer plot sine cosine quadratic samples filesystem text file path Native pixels">
+        <div class="section-heading"><div><span class="section-kicker">06 / SOURCE HELPERS</span><h2>Rendering, plotting & files</h2></div><span class="section-icon">▤</span></div>
+        <div class="api-list">
+          <div class="api-card"><div class="api-signature"><code>Renderer</code><span class="api-tag">CPU framebuffer</span></div><p><code>create/destroy</code>, <code>pixel</code>, <code>clear</code>, <code>rect</code>, <code>rect_outline</code>, <code>line</code>, <code>triangle</code>, <code>circle</code>, <code>fill_circle</code>, <code>vertex_x/y/z</code>, <code>project_x/y</code>, and <code>cube</code>. Draws in software to a native pixel buffer; present it with <code>Win.pixels(buffer,width,height)</code>. The projected cube functions are simple sample geometry, not a general 3D scene graph.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Plot</code><span class="api-tag">functions & curves</span></div><p><code>map_x/map_y</code>, <code>grid</code>, <code>sine</code>, <code>cosine</code>, <code>quadratic</code>, <code>samples</code>. Curves and point samples are rasterized into a <code>Renderer</code> buffer using plot bounds, sample counts and packed colors. The custom-samples helper reads numeric values from supplied runtime buffers.</p></div>
+          <div class="api-card"><div class="api-signature"><code>OS</code><span class="api-tag">filesystem</span></div><p><code>mkdir/create_dir</code>, <code>exists</code>, <code>delete/remove</code>, <code>copy</code>, <code>move</code>, <code>save_text/write_text</code>, <code>append_text</code>, <code>read_text</code>. Mutating/status functions return integer success/failure values; <code>read_text</code> returns a string. File data is UTF-8; Windows paths use the active ANSI code page.</p></div>
+          <div class="api-card"><div class="api-signature"><code>Tkinter.center_x / center_y / row_y / column_x</code><span class="api-tag">layout helpers</span></div><p>Calculates coordinates for arranging native <code>Win.label</code> and <code>Win.button</code> controls. Despite the module name, this does not create Python Tkinter widgets or embed Python GUI code.</p></div>
+        </div>
+        <p class="muted-note">The helpers are intentionally small source-level building blocks. The package also contains game/rendering examples including a software-rendered cube, a plotter, a GPU OpenGL cube, a Vulkan clear demo, and the FoxCraft3D voxel sandbox.</p>
+      </section>
+
+      <section class="doc-section" id="limits" data-search="limitations no shaders no Vulkan mesh renderer no audio runtime arrays GUI one window tests">
+        <div class="section-heading"><div><span class="section-kicker">07 / STATUS</span><h2>Implementation limits</h2></div><span class="section-icon">◷</span></div>
+        <p>Compilation to PE32+ and successful imports are not proof of display correctness. OpenGL context creation and Vulkan surface/swapchain presentation should be tested on an actual Windows desktop and supported driver.</p>
+        <div class="limit-grid">
+          <div class="limit-item"><span class="limit-icon">01</span><div><strong>OpenGL</strong><p>Fixed-function OpenGL 1.1 only; no programmable shaders or compute, and no standardized hardware sensor API.</p></div></div>
+          <div class="limit-item"><span class="limit-icon">02</span><div><strong>Vulkan</strong><p>Clear and present only. No mesh pipeline, shader compilation, depth/texture/material system, or swapchain resize recovery yet.</p></div></div>
+          <div class="limit-item"><span class="limit-icon">03</span><div><strong>Windows GUI</strong><p>One <code>Win.begin</code> window, one paint callback and one timer callback per program. The timer-driven rendering API is Windows-specific.</p></div></div>
+          <div class="limit-item"><span class="limit-icon">04</span><div><strong>Concurrency</strong><p>No built-in locks, atomics, channels or safe shared-state primitives. Shared mutable state can race across worker threads.</p></div></div>
+        </div>
+      </section>
+      <footer class="site-footer" id="reference"><div class="footer-brand"><span class="fox-mark">ƒ</span><strong>Fox<span class="brand-light">Docs</span></strong></div><p>Graphics and helper API reference for the current Fox source.</p><div class="footer-meta"><span>Windows x86-64 · PE32+</span><span><a href="index.html">Back to the language guide ↑</a></span><a href="#top">Back to top ↑</a></div></footer>
+      <div id="no-results" class="no-results" hidden><strong>No matching API</strong><span>Try a different module or method name.</span></div>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
