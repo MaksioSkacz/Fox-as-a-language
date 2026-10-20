@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
-  <meta name="description" content="The Fox programming language guide: syntax, compiler, runtime, functions, control flow, collections, Windows GUI, and threads.">
+  <meta name="description" content="Fox language documentation: native Windows compiler, typed runtime values, Win32 GUI, OpenGL, experimental Vulkan, and source helper APIs.">
   <title>Fox Language — Documentation</title>
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
@@ -20,7 +20,7 @@
     <div class="top-actions">
       <label class="search-box" for="docs-search"><span class="search-icon" aria-hidden="true">⌕</span><input id="docs-search" type="search" placeholder="Search documentation…" autocomplete="off"><kbd> / </kbd></label>
       <button class="icon-button theme-toggle" id="theme-toggle" aria-label="Switch color theme" title="Switch color theme"><span id="theme-icon">☼</span></button>
-      <a class="github-link" href="#reference">Reference <span aria-hidden="true">↗</span></a>
+      <a class="github-link" href="api-reference.html">API reference <span aria-hidden="true">↗</span></a>
     </div>
   </header>
   <div class="page-shell" id="top">
@@ -47,6 +47,7 @@
         <a class="nav-link" href="#threads">Thread — concurrency</a>
         <div class="sidebar-label">HELPER LIBRARY</div>
         <a class="nav-link" href="#studio">Renderer · Plot · OS</a>
+        <a class="nav-link" href="api-reference.html">Complete API reference ↗</a>
         <div class="sidebar-label">REFERENCE</div>
         <a class="nav-link" href="#errors">Compiler errors</a>
         <a class="nav-link" href="#limitations">Current limitations</a>
@@ -61,7 +62,7 @@
         <div class="eyebrow"><span class="eyebrow-line"></span> THE FOX LANGUAGE</div>
         <h1>Write Fox.<br><span>Compile native.</span></h1>
         <p class="hero-copy">Fox is a small programming language with a Python-written compiler that emits Windows x86-64 machine code into a native PE32+ executable. These docs describe the implemented language—not a wish-list of future features.</p>
-        <div class="hero-actions"><a class="button button-primary" href="#installer">Download Fox for Windows <span>→</span></a><a class="button button-secondary" href="#reference">Explore the reference</a></div>
+        <div class="hero-actions"><a class="button button-primary" href="#installer">Download Fox for Windows <span>→</span></a><a class="button button-secondary" href="api-reference.html">Graphics & helper APIs</a></div>
         <div class="hero-stats"><div><strong>Native</strong><span>PE32+ executable output</span></div><div><strong>Game-ready APIs</strong><span>Mouse · framebuffer · OS</span></div><div><strong>.fox</strong><span>Source file extension</span></div></div>
         <div class="hero-code-window" aria-label="Fox code example">
           <div class="window-bar"><div class="window-dots"><i></i><i></i><i></i></div><span>hello.fox</span><button class="copy-button" data-copy="hero-snippet">Copy</button></div>
@@ -112,12 +113,14 @@ Console.log(<span class="syn-string">"The # inside this string is text"</span>)<
         <p class="muted-note">Reserved words include <code>include</code>, <code>variable</code>, <code>constant</code>, <code>true</code>, <code>false</code>, <code>null</code>, <code>while</code>, <code>if</code>, <code>else</code>, <code>for</code>, <code>to</code>, <code>step</code>, <code>end</code>, and <code>return</code>. Some forms, such as <code>include</code>, are restricted to top-level code.</p>
       </section>
 
-      <section class="doc-section" id="values" data-search="values types integer number decimal string boolean null array dictionary compile time runtime model">
+      <section class="doc-section" id="values" data-search="values types integer binary64 float string boolean null array dictionary compile time runtime model">
         <div class="section-heading"><div><span class="section-kicker">04 / DATA MODEL</span><h2>Values & types</h2></div><span class="section-icon">◈</span></div>
-        <p>The key distinction in current Fox is between values known to the compiler and values that exist as mutable runtime state in the generated program.</p>
-        <div class="type-cards"><div class="type-card type-runtime"><div class="type-top"><span class="type-symbol">01</span><span class="type-badge runtime-badge">Runtime</span></div><h3>Integer state</h3><p>Global integer variables, function arguments, integer locals, arithmetic, comparisons and loop state are emitted into native code.</p><code>variable score = 10</code></div><div class="type-card"><div class="type-top"><span class="type-symbol">02</span><span class="type-badge compile-badge">Compile-time</span></div><h3>Static values</h3><p>Strings, decimals, booleans, null, arrays and dictionaries are evaluated while compiling. They are useful for constants and static program data.</p><code>constant title = "Fox"</code></div></div>
-        <div class="table-wrap"><table><thead><tr><th>Type / value</th><th>Example</th><th>Current behavior</th></tr></thead><tbody><tr><td>Integer</td><td><code>17</code></td><td>Can be a runtime variable and participate in native runtime arithmetic.</td></tr><tr><td>Number / decimal</td><td><code>2.5</code></td><td>Compile-time numeric calculation only; not native floating-point runtime state.</td></tr><tr><td>String</td><td><code>"hello"</code></td><td>Compile-time value; string concatenation with <code>+</code> is supported when both values are strings.</td></tr><tr><td>Boolean</td><td><code>true</code></td><td>Compile-time values can be conditions. Runtime comparisons produce booleans for <code>if</code>/<code>while</code>.</td></tr><tr><td>Null</td><td><code>null</code></td><td>Compile-time literal.</td></tr><tr><td>Array</td><td><code>[1, 2, 3]</code></td><td>Compile-time sequence; values can be accessed with integer indexes.</td></tr><tr><td>Dictionary</td><td><code>{"name": "Fox"}</code></td><td>Compile-time key/value data with quoted string keys.</td></tr></tbody></table></div>
-        <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>Do not assume every variable is dynamic</strong><p>A top-level <code>variable count = 0</code> is mutable native integer state. A top-level <code>variable title = "Fox"</code> is currently a compile-time value. Function-local variables must be integer-valued.</p></div></div>
+        <p>Fox distinguishes mutable scalar state emitted into the executable from values resolved while compiling. Native runtime scalars include signed integers, IEEE-754 binary64 floats, booleans and explicitly typed strings. Array and dictionary literals remain compile-time data; <code>RuntimeArray</code> supplies a separate mutable numeric buffer API.</p>
+        <div class="type-cards"><div class="type-card type-runtime"><div class="type-top"><span class="type-symbol">01</span><span class="type-badge runtime-badge">Runtime</span></div><h3>Scalar state</h3><p>Integer and float arithmetic, boolean flags, typed string slots, function arguments/locals, comparisons and loop state compile to native code.</p><code>variable speed: float = 2.5</code></div><div class="type-card"><div class="type-top"><span class="type-symbol">02</span><span class="type-badge compile-badge">Compile-time</span></div><h3>Static values</h3><p>Unannotated string values, constants, nested arrays and dictionaries can be resolved while compiling. Add <code>: string</code> to declare a runtime string slot.</p><code>constant title = "Fox"</code></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Type / value</th><th>Example</th><th>Current behavior</th></tr></thead><tbody><tr><td>Integer</td><td><code>17</code></td><td>Runtime signed integer; integer division truncates toward zero.</td></tr><tr><td>Float / number</td><td><code>2.5</code></td><td>Runtime binary64 value. Annotate as <code>: float</code> (or <code>: number</code>) when you need to pin the type.</td></tr><tr><td>Boolean</td><td><code>true</code></td><td>Boolean variables can hold runtime state; comparisons produce booleans. <code>==</code>/<code>!=</code> can compare two booleans at runtime.</td></tr><tr><td>String</td><td><code>variable label: string = "hello"</code></td><td>Typed runtime strings can be assigned, passed to typed functions, returned and logged. Unannotated literal strings may remain compile-time values.</td></tr><tr><td>Null</td><td><code>null</code></td><td>Compile-time literal; not a general runtime nullable-reference type.</td></tr><tr><td>Array</td><td><code>[1, 2, 3]</code></td><td>Compile-time sequence with zero-based integer indexes; no runtime mutation or dynamic indexing.</td></tr><tr><td>Dictionary / table</td><td><code>{"name": "Fox", [2] = "level"}</code></td><td>Compile-time key/value data. Keys may be strings or integers; lookup uses a compile-time key.</td></tr></tbody></table></div>
+        <div class="api-card"><div class="api-signature"><code>to_int(value) / to_float(value) / to_string(value) / to_bool(value)</code><span class="api-tag">conversions</span></div><p>Built-in scalar conversions. <code>to_int</code> truncates numeric input toward zero; <code>to_float</code> converts numbers; <code>to_string</code> formats scalar values; <code>to_bool</code> maps numeric zero/nonzero and recognizes static text such as <code>"true"</code>, <code>"false"</code>, <code>"yes"</code>, <code>"no"</code>, <code>"on"</code>, and <code>"off"</code>. Runtime text cannot be passed directly to <code>to_bool</code>; compare <code>to_int(text) != 0</code> instead.</p></div>
+
+        <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>Literal collections are not runtime containers</strong><p>A normal array or dictionary is evaluated during compilation. Use <code>RuntimeArray</code> or <code>World3D</code> for native heap-backed numeric data that changes while the program is running. See the <a href="api-reference.html#world">memory helper reference</a>.</p></div></div>
       </section>
 
       <section class="doc-section" id="variables" data-search="variable constant declaration assignment compound plus equals runtime variable compile time constant type consistency">
@@ -132,23 +135,26 @@ Console.log(<span class="syn-string">"The # inside this string is text"</span>)<
 score += <span class="syn-number">10</span>
 score *= <span class="syn-number">2</span>
 Console.log(score)</code></pre></div>
-        <p><code>constant</code> marks a compile-time value as non-reassignable. A compile-time <code>variable</code> can be reassigned at top level, but the new value must have the same type as the original declaration. Runtime integer variables support <code>=</code> and compound numeric assignments.</p>
-        <h3>Assignment operators</h3><div class="operator-strip"><code>=</code><code>+=</code><code>-=</code><code>*=</code><code>/=</code><code>%=</code></div>
-        <p>Inside runtime blocks, assignments are restricted to known runtime integer variables and function parameters/locals. Declarations inside top-level <code>if</code>/<code>while</code>/<code>for</code> blocks are not supported; declare those variables before the block.</p>
+        <p><code>constant</code> marks a compile-time value as non-reassignable. Unannotated scalar variables initialized with numbers or booleans are runtime state; explicit annotations such as <code>variable speed: float = 3.5</code> and <code>variable title: string = "Fox"</code> select a runtime type. Unannotated string/array/table literals may remain compile-time values.</p>
+        <h3>Assignment operators</h3><div class="operator-strip"><code>=</code><code>+=</code><code>-=</code><code>*=</code><code>/=</code><code>%=</code><code>^=</code></div>
+        <p>Inside blocks, assign to declared runtime state. Numeric variables support matching numeric assignments (inferred numeric variables can promote from integer to float); boolean variables accept booleans, and typed strings accept strings. Declarations inside top-level <code>if</code>/<code>while</code>/<code>for</code> blocks are not supported; declare mutable state before the block.</p>
       </section>
 
-      <section class="doc-section" id="operators" data-search="operators arithmetic plus minus multiply divide modulo comparisons equals not equal precedence unary parentheses">
+      <section class="doc-section" id="operators" data-search="operators arithmetic plus minus multiply divide modulo exponent power caret comparisons compound assignment precedence unary parentheses floats">
         <div class="section-heading"><div><span class="section-kicker">06 / EXPRESSIONS</span><h2>Operators & expressions</h2></div><span class="section-icon">∑</span></div>
-        <div class="table-wrap"><table><thead><tr><th>Operator</th><th>Purpose</th><th>Notes</th></tr></thead><tbody><tr><td><code>+</code></td><td>Addition / string concatenation</td><td>Runtime arithmetic is integer-only; string concatenation is compile-time.</td></tr><tr><td><code>-</code></td><td>Subtraction / unary negative</td><td>Integer runtime arithmetic and compile-time numeric arithmetic.</td></tr><tr><td><code>*</code></td><td>Multiplication</td><td>Integer runtime arithmetic; compile-time numbers also supported.</td></tr><tr><td><code>/</code></td><td>Division</td><td>Runtime integer division truncates toward zero. Compile-time division uses integer truncation when both operands are integers; if either operand is decimal, it uses ordinary division.</td></tr><tr><td><code>%</code></td><td>Remainder</td><td>Runtime integers only; compile-time numeric remainder is available.</td></tr><tr><td><code>==</code>, <code>!=</code></td><td>Equality / inequality</td><td>At runtime, integer operands only.</td></tr><tr><td><code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></td><td>Numeric comparison</td><td>Runtime integer operands only.</td></tr><tr><td><code>( )</code></td><td>Grouping</td><td>Use parentheses to control evaluation order.</td></tr></tbody></table></div>
-        <h3>Precedence</h3><p>Parentheses bind first, followed by unary <code>+</code>/<code>-</code>, multiplication/division/remainder, addition/subtraction, and then a single comparison.</p>
-        <div class="code-card"><div class="code-header"><span>expressions.fox</span><button class="copy-button" data-copy="operators-code">Copy</button></div><pre><code id="operators-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
-<span class="syn-keyword">variable</span> result = (<span class="syn-number">4</span> + <span class="syn-number">6</span>) * <span class="syn-number">2</span>
-Console.log(result)  <span class="syn-comment"># 20</span>
+        <div class="table-wrap"><table><thead><tr><th>Operator</th><th>Purpose</th><th>Notes</th></tr></thead><tbody><tr><td><code>+</code></td><td>Addition / string concatenation</td><td>Runtime numbers support addition; two compile-time strings can be concatenated with <code>+</code>. Runtime string concatenation is not supported.</td></tr><tr><td><code>-</code></td><td>Subtraction / unary negative</td><td>Runtime integer and float arithmetic.</td></tr><tr><td><code>*</code>, <code>/</code>, <code>%</code></td><td>Multiply, divide, remainder</td><td>Runtime integer and float arithmetic. Integer division truncates toward zero; float remainder uses floating-point remainder semantics.</td></tr><tr><td><code>^</code></td><td>Exponentiation</td><td>Supported at compile time and at runtime for numeric operands. Power is right-associative: <code>a ^ b ^ c</code> means <code>a ^ (b ^ c)</code>.</td></tr><tr><td><code>==</code>, <code>!=</code></td><td>Equality / inequality</td><td>Numeric values are comparable; runtime boolean equality/inequality is supported. Runtime string comparisons are not.</td></tr><tr><td><code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></td><td>Numeric comparison</td><td>Accept runtime integer or float operands.</td></tr><tr><td><code>( )</code></td><td>Grouping</td><td>Use parentheses to control evaluation order.</td></tr></tbody></table></div>
+        <h3>Precedence</h3><p>Parentheses bind first; exponentiation binds more tightly than unary minus; then multiplication/division/remainder; then addition/subtraction; then one comparison. For example, <code>-2 ^ 2</code> means <code>-(2 ^ 2)</code>.</p>
+        <div class="code-card"><div class="code-header"><span>expressions.fox</span><button class="copy-button" data-copy="operators-code">Copy</button></div><pre><code id="operators-code">include Con as Console
 
-<span class="syn-keyword">if</span> result >= <span class="syn-number">20</span>
-    Console.log(<span class="syn-string">"ready"</span>)
-<span class="syn-keyword">end</span>:</code></pre></div>
-        <p class="muted-note">Chained comparisons such as <code>a &lt; b &lt; c</code> are rejected. Logical operators such as <code>&amp;&amp;</code>, <code>and</code>, <code>or</code>, and boolean negation are not implemented in the current parser; use nested <code>if</code> statements instead.</p>
+variable result = (4 + 6) * 2
+variable power: float = 2.0 ^ 3.0
+Console.log(result)
+Console.log(power)
+
+if power >= 8.0
+    Console.log("ready")
+end:</code></pre></div>
+        <p class="muted-note">Chained comparisons such as <code>a &lt; b &lt; c</code> are rejected. Logical operators such as <code>&amp;&amp;</code>, <code>and</code>, <code>or</code>, and boolean negation are not implemented; use nested <code>if</code> statements instead.</p>
       </section>
 
       <section class="doc-section" id="control-flow" data-search="control flow if else while for to step end loops branching conditions runtime integer comparison">
@@ -180,29 +186,29 @@ Console.log(result)  <span class="syn-comment"># 20</span>
         <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>Declare carefully</strong><p>Runtime declarations inside top-level control-flow blocks are not supported. Declare mutable state before the block. Function-local integer declarations are supported inside functions.</p></div></div>
       </section>
 
-      <section class="doc-section" id="functions" data-search="functions parameters args return integer locals user functions function call four parameters native code">
+      <section class="doc-section" id="functions" data-search="functions parameters args return integer float number string typed annotations runtime locals max sixteen native code bool conversion">
         <div class="section-heading"><div><span class="section-kicker">08 / REUSE</span><h2>Functions</h2></div><span class="section-icon">f( )</span></div>
-        <p>Define a function using <code>variable name(parameters)</code>, and close it with <code>end:</code>. Functions support up to four integer parameters and return integer values.</p>
-        <div class="code-card"><div class="code-header"><span>functions.fox</span><button class="copy-button" data-copy="functions-code">Copy</button></div><pre><code id="functions-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
+        <p>Define a function with <code>variable name(parameters)</code> and close it with <code>end:</code>. Functions accept up to 16 parameters. Parameter/return annotations support <code>integer</code>, <code>float</code> (or <code>number</code>) and <code>string</code>; unannotated numeric return types are inferred. Function-local variables support scalar integer, float, boolean and string values.</p>
+        <div class="code-card"><div class="code-header"><span>functions.fox</span><button class="copy-button" data-copy="functions-code">Copy</button></div><pre><code id="functions-code">include Con as Console
 
-<span class="syn-keyword">variable</span> multiply(a, b)
-    <span class="syn-keyword">return</span> a * b
-<span class="syn-keyword">end</span>:
+variable multiply(a: float, b: float): float
+    return a * b
+end:
 
-<span class="syn-keyword">variable</span> square(n)
-    <span class="syn-keyword">variable</span> result = n * n
-    <span class="syn-keyword">return</span> result
-<span class="syn-keyword">end</span>:
+variable echo_text(text: string): string
+    return text
+end:
 
-<span class="syn-keyword">variable</span> answer = multiply(square(<span class="syn-number">4</span>), <span class="syn-number">2</span>)
-Console.log(answer)  <span class="syn-comment"># 32</span></code></pre></div>
-        <h3>Function rules</h3><ul class="feature-list"><li><span class="checkmark">✓</span><span>Arguments must be integer expressions.</span></li><li><span class="checkmark">✓</span><span>Return values are integers. A function that reaches its end without an explicit return defaults to <code>0</code>.</span></li><li><span class="checkmark">✓</span><span>Function-local variables are integer-only and runtime-backed.</span></li><li><span class="checkmark">✓</span><span>Functions can be called as statements or inside integer expressions.</span></li><li><span class="limitmark">!</span><span>Function-local <code>constant</code> declarations are not supported yet.</span></li></ul>
-        <p>For a zero-argument function, write empty parentheses: <code>variable greet()</code>. Call it with <code>greet()</code>.</p>
+variable answer = multiply(4.0, 2.5)
+Console.log(answer)
+Console.log(echo_text("Fox"))</code></pre></div>
+        <h3>Function rules</h3><ul class="feature-list"><li><span class="checkmark">✓</span><span>Unannotated parameters default to integer; parameters can be explicitly typed as <code>integer</code>, <code>float</code>/<code>number</code> or <code>string</code>. A string argument can infer an unannotated string parameter.</span></li><li><span class="checkmark">✓</span><span>Scalar return types can be integer, float, string or boolean; return annotations currently allow integer, float/number or string.</span></li><li><span class="checkmark">✓</span><span>Function-local declarations support runtime scalar values, but local <code>constant</code> declarations are not supported.</span></li><li><span class="checkmark">✓</span><span>Functions can be called in expressions or as statements. A function that reaches its end without an explicit return defaults to <code>0</code>.</span></li><li><span class="limitmark">!</span><span>GUI button, paint and timer callbacks plus thread entry functions must have zero parameters.</span></li></ul>
+        <p>A return annotation follows the parameter list: <code>variable scale(x: float): float</code>. User function arguments and return values are passed through the native x64 calling convention in the generated executable.</p>
       </section>
 
       <section class="doc-section" id="collections" data-search="arrays lists dictionaries collections index compile time static values nested arrays key string quoted data">
         <div class="section-heading"><div><span class="section-kicker">09 / DATA</span><h2>Arrays & dictionaries</h2></div><span class="section-icon">[ ]</span></div>
-        <p>Arrays and dictionaries are currently compile-time data structures. The compiler evaluates their literals and resolves indexes while compiling; they are not heap-allocated mutable runtime collections.</p>
+        <p>Arrays and dictionaries are compile-time data structures: the compiler evaluates literals and resolves lookups while compiling. Arrays use zero-based integer indices. Dictionaries (tables) accept unique string or integer keys. Neither is a heap-allocated mutable runtime collection.</p>
         <div class="code-card"><div class="code-header"><span>collections.fox</span><button class="copy-button" data-copy="collections-code">Copy</button></div><pre><code id="collections-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
 
 <span class="syn-keyword">variable</span> items = [<span class="syn-string">"first"</span>, <span class="syn-string">"second"</span>, <span class="syn-string">"third"</span>]
@@ -215,13 +221,13 @@ Console.log(answer)  <span class="syn-comment"># 32</span></code></pre></div>
 Console.log(items[<span class="syn-number">0</span>])
 Console.log(player[<span class="syn-string">"name"</span>])
 Console.log(items)</code></pre></div>
-        <div class="mini-grid"><div class="mini-card"><strong>Array indexes</strong><p>Zero-based integer indexes, for example <code>items[0]</code>. Out-of-range access is a compile error.</p></div><div class="mini-card"><strong>Dictionary keys</strong><p>Keys must be unique quoted strings. Read with <code>player["name"]</code>.</p></div></div>
-        <p>Nested arrays and dictionaries are supported as literals. Static values can be logged directly with <code>Console.log</code>. Runtime indexes and runtime mutation of these collections are not implemented.</p>
+        <div class="mini-grid"><div class="mini-card"><strong>Array indexes</strong><p>Zero-based integer indexes, for example <code>items[0]</code>. Out-of-range access is a compile error.</p></div><div class="mini-card"><strong>Dictionary keys</strong><p>Keys can be unique quoted strings or integer literals. Read with <code>player["name"]</code> or <code>table[2]</code>.</p></div></div>
+        <p>Nested arrays and dictionaries are supported as literals, including lookups by integer table key. Static values can be logged directly with <code>Console.log</code>. Dynamic indexing and runtime mutation are not implemented; use the <code>RuntimeArray</code> helper for runtime numeric storage.</p>
       </section>
 
       <section class="doc-section" id="modules" data-search="modules include custom module source file import alias Con Win Thread library inline functions namespace">
         <div class="section-heading"><div><span class="section-kicker">10 / PROJECT STRUCTURE</span><h2>Modules & includes</h2></div><span class="section-icon">⇢</span></div>
-        <p><code>include</code> statements must appear at the top level. The built-in modules are <code>Con</code>, <code>Win</code>, <code>Thread</code> and <code>Mouse</code>. Source helpers such as <code>Renderer</code>, <code>Plot</code> and <code>OS</code> are expanded from matching files in <code>helpers/</code>.</p>
+        <p><code>include</code> statements must appear at the top level. The compiler has native <code>Con</code>, <code>Win</code>, <code>Thread</code> and <code>Mouse</code> APIs. Source modules—including <code>GPU</code>, <code>Vulkan</code>, <code>Keyboard</code>, <code>Math</code>, <code>Renderer</code>, <code>Plot</code> and <code>World3D</code>—are expanded from matching files in <code>helpers/</code>. The <a href="api-reference.html">complete API reference</a> lists the graphics backends and helper families.</p>
         <div class="code-card"><div class="code-header"><span>includes.fox</span><button class="copy-button" data-copy="modules-code">Copy</button></div><pre><code id="modules-code"><span class="syn-keyword">include</span> Con <span class="syn-keyword">as</span> Console
 <span class="syn-keyword">include</span> Win <span class="syn-keyword">as</span> Win
 <span class="syn-keyword">include</span> Thread <span class="syn-keyword">as</span> Thread
@@ -328,7 +334,7 @@ Win.begin(<span class="syn-string">"Fox Renderer"</span>, W, H)
 <span class="syn-keyword">end</span>:
 Win.paint(<span class="syn-string">"draw_scene"</span>)
 Win.run()</code></pre></div>
-        <div class="callout callout-blue"><span class="callout-symbol">↳</span><div><strong>Related examples</strong><p>The source kit includes a spinning cube, math plotter, custom-function plot, filesystem examples and the FoxCraft3D voxel sandbox.</p></div></div>
+        <div class="callout callout-blue"><span class="callout-symbol">↳</span><div><strong>Related examples</strong><p>The source kit includes a spinning software-rendered cube, math plotter, filesystem examples, a native OpenGL cube, a Vulkan clear/present test and the FoxCraft3D voxel sandbox. See the <a href="api-reference.html">graphics and helper API reference</a> for available methods and their current limits.</p></div></div>
       </section>
 
       <section class="doc-section" id="threads" data-search="Thread concurrency start wait background worker zero-parameter functions CreateThread sync race shared state">
@@ -355,7 +361,7 @@ Thread.wait()</code></pre></div>
       <section class="doc-section" id="limitations" data-search="limitations unsupported features runtime dynamic strings floats collections logical operators input functions local constants GUI dynamic args arrays">
         <div class="section-heading"><div><span class="section-kicker">17 / LANGUAGE STATUS</span><h2>Current limitations</h2></div><span class="section-icon">◷</span></div>
         <p>Fox is an evolving compiler, so some features that look familiar from other languages are not yet implemented. These are current implementation constraints, not recommended language design.</p>
-        <div class="limit-grid"><div class="limit-item"><span class="limit-icon">01</span><div><strong>Runtime features are typed and bounded</strong><p>The current compiler supports native numeric values, typed string operations and runtime arrays. Some literal arrays and dictionaries are still resolved at compile time.</p></div></div><div class="limit-item"><span class="limit-icon">02</span><div><strong>No logical operators</strong><p>There is no <code>and</code>/<code>or</code>/<code>not</code> or <code>&amp;&amp;</code>/<code>||</code> expression support. Chained comparisons are rejected.</p></div></div><div class="limit-item"><span class="limit-icon">03</span><div><strong>No runtime declaration in top-level blocks</strong><p>Declare globals before top-level runtime <code>if</code>, <code>while</code> or <code>for</code> blocks.</p></div></div><div class="limit-item"><span class="limit-icon">04</span><div><strong>Native GUI and software graphics</strong><p>Fox supports Win32 windows, timers, keyboard polling, mouse capture and relative deltas, plus software framebuffer rendering. It does not yet provide a GPU-backed general-purpose renderer or built-in audio system.</p></div></div><div class="limit-item"><span class="limit-icon">05</span><div><strong>Limited thread coordination</strong><p>Threads can be started and joined, but there are no built-in locks, message queues or safe shared-state primitives.</p></div></div><div class="limit-item"><span class="limit-icon">06</span><div><strong>One window and paint callback</strong><p>The current compiler accepts one <code>Win.begin</code> window and one <code>Win.paint</code> callback per program.</p></div></div></div>
+        <div class="limit-grid"><div class="limit-item"><span class="limit-icon">01</span><div><strong>Runtime features are typed and bounded</strong><p>The current compiler supports native numeric values, typed string operations and runtime arrays. Some literal arrays and dictionaries are still resolved at compile time.</p></div></div><div class="limit-item"><span class="limit-icon">02</span><div><strong>No logical operators</strong><p>There is no <code>and</code>/<code>or</code>/<code>not</code> or <code>&amp;&amp;</code>/<code>||</code> expression support. Chained comparisons are rejected.</p></div></div><div class="limit-item"><span class="limit-icon">03</span><div><strong>No runtime declaration in top-level blocks</strong><p>Declare globals before top-level runtime <code>if</code>, <code>while</code> or <code>for</code> blocks.</p></div></div><div class="limit-item"><span class="limit-icon">04</span><div><strong>Native GUI and software graphics</strong><p>Fox supports Win32 windows, timers, keyboard polling, mouse capture, a CPU software framebuffer, and native OpenGL 1.1 fixed-function rendering through <code>GPU</code>. The experimental Vulkan backend currently clears and presents swapchain images only; it is not a mesh renderer. There is no built-in audio system.</p></div></div><div class="limit-item"><span class="limit-icon">05</span><div><strong>Limited thread coordination</strong><p>Threads can be started and joined, but there are no built-in locks, message queues or safe shared-state primitives.</p></div></div><div class="limit-item"><span class="limit-icon">06</span><div><strong>One window and paint callback</strong><p>The current compiler accepts one <code>Win.begin</code> window and one <code>Win.paint</code> callback per program.</p></div></div></div>
       </section>
 
       <section class="doc-section" id="examples" data-search="examples complete counter calculator function collections gui thread quick sample">

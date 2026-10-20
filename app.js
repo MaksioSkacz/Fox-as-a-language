@@ -76,7 +76,12 @@
     });
     noResults.hidden = count !== 0;
     navLinks.forEach(link => {
-      const target = document.querySelector(link.getAttribute('href'));
+      const href = link.getAttribute('href') || '';
+      if (!href.startsWith('#')) {
+        link.hidden = false;
+        return;
+      }
+      const target = document.querySelector(href);
       link.hidden = !!query && (!target || target.hidden);
     });
   }

@@ -24,3 +24,20 @@
 
 ### Validation notes
 Compiler unit tests and PE32+ output checks are run against the development snapshot. GUI behavior still needs an actual Windows desktop session for visual testing.
+## Fox 0.3.1 — October 20, 2026
+
+### Language and API documentation
+- Audited the docs against `FoxNewest.7z`, not the `FoxCL.7z` backup.
+- Added a separate graphics/helper API reference for native OpenGL 1.1, the current experimental Vulkan clear/present path, and all source helper families.
+- Updated the main guide for runtime integer/float/boolean state, typed strings/functions, exponentiation, and integer-keyed table lookups.
+- Documented current renderer scope: OpenGL fixed-function calls work through WGL; Vulkan currently supports device probing and clear/present only, without shaders or mesh pipelines.
+
+### Windows installer
+- MSI workflow now extracts `FoxNewest.7z` and explicitly fails instead of falling back to `FoxCL.7z`.
+- Fixed the WiX PATH element using the core `Environment` schema element.
+- Bumped MSI/package release version to `0.3.1` so Windows Installer can upgrade from the previous `0.3.0` package.
+- Added pull-request builds and kept public-release publishing restricted to successful main-branch builds.
+
+### Validation
+- GitHub Actions built the standalone `fox.exe`, passed `fox.exe --help`, compiled `installer/mouse_capture_demo.fox`, and successfully generated `Fox-Setup-x64.msi` on a Windows runner.
+- Archive audit: `python -m py_compile fox.py` passed. The bundled full pytest suite currently has 5 failures (4 stale GUI examples reference missing `helpers/Gui.fox`; one helper test's expected module list omits `GPU` and `Vulkan`). Some GPU diagnostic examples also call `GPU.show_diagnostic()`, which is not wrapped by the current `helpers/GPU.fox`. These source/test inconsistencies are not hidden by the documentation and remain to be fixed in the source archive.
