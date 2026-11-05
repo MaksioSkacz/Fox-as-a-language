@@ -35,6 +35,7 @@
         <a class="nav-link" href="#math">Math & geometry</a>
         <a class="nav-link" href="#world">3D, physics & memory</a>
         <a class="nav-link" href="#rendering-files">Rendering, plotting & files</a>
+        <a class="nav-link" href="#signatures">Complete function signatures</a>
         <a class="nav-link" href="index.html#studio">Back to renderer examples</a>
         <div class="sidebar-note"><span class="note-icon">i</span><p>This reference is audited against the compiler and helpers shipped in <code>FoxNewest.7z</code>. Experimental features and implementation limits are marked.</p></div>
       </div>
@@ -176,7 +177,293 @@ Vulkan.render_shutdown()</code></pre></div>
         <p class="muted-note">The helpers are intentionally small source-level building blocks. The package also contains game/rendering examples including a software-rendered cube, a plotter, a GPU OpenGL cube, a Vulkan clear demo, and the FoxCraft3D voxel sandbox.</p>
       </section>
 
-      <section class="doc-section" id="limits" data-search="limitations no shaders no Vulkan mesh renderer no audio runtime arrays GUI one window tests">
+<section class="doc-section" id="signatures" data-search="complete function signatures all Fox helper modules built-in APIs exact parameters return types">
+        <div class="section-heading"><div><span class="section-kicker">07 / COMPLETE REFERENCE</span><h2>Complete function signatures</h2></div><span class="section-icon">ƒ</span></div>
+        <p>This inventory follows the declarations in the supplied Fox source tree. Source helpers are plain Fox files in <code>helpers/</code>; the compiler expands them and rewrites alias-qualified calls to module-prefixed functions. These are scalar functions, not class instances or object APIs.</p>
+        <div class="api-list"><div class="api-card"><div class="api-signature"><code>Con — console and file shortcuts</code><span class="api-tag">API</span></div><p>Built-in compiler module. These are statements; use OS helpers when you need returned status or file contents.</p><pre><code>Con.log([value])
+Con.log_fixed(hundredths)
+Con.mkdir(path)
+Con.exists(path)
+Con.delete(path)
+Con.copy(source, destination)
+Con.move(source, destination)
+Con.save(path, contents)
+Con.append(path, contents)
+Con.read(path)</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Win — native Windows GUI</code><span class="api-tag">API</span></div><p>Built-in Win32 window, control, GDI drawing and framebuffer API. See the language guide for which arguments must be compile-time literals.</p><pre><code>Win.message_box(title, message)
+Win.window(title, width, height)
+Win.begin(title, width, height)
+Win.maximize()
+Win.set_resizable(enabled)
+Win.label(text, x, y, width, height)
+Win.button(text, x, y, width, height, callback_name)
+Win.rect(x, y, width, height, color)
+Win.text(text, x, y, color)
+Win.pixels(pixel_buffer, source_width, source_height)
+Win.paint(callback_name)
+Win.timer(callback_name, interval_ms)
+Win.run()</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Mouse — native cursor control</code><span class="api-tag">API</span></div><p>Capture, hide/show and polling. Call update before reading frame-to-frame deltas.</p><pre><code>Mouse.capture(enabled)
+Mouse.hide()
+Mouse.show()
+Mouse.update()
+Mouse.x()
+Mouse.y()
+Mouse.delta_x()
+Mouse.delta_y()</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Thread — worker threads</code><span class="api-tag">API</span></div><p>Windows worker-thread launcher. Worker functions must take zero parameters; wait joins started workers.</p><pre><code>Thread.start(function_name)
+Thread.wait()</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Keyboard — virtual keys and polling</code><span class="api-tag">API</span></div><p>The helper functions return Win32 virtual-key codes. is_down and pressed are compiler-native calls, not declarations in Keyboard.fox.</p><pre><code>Keyboard.W() / A() / S() / D()
+Keyboard.UP() / DOWN() / LEFT() / RIGHT()
+Keyboard.SPACE() / ENTER() / ESCAPE()
+Keyboard.SHIFT() / CTRL()
+Keyboard.MOUSE_LEFT() / MOUSE_RIGHT()
+Keyboard.KEY_1() / KEY_2() / KEY_3() / KEY_4()
+Keyboard.is_down(virtual_key)
+Keyboard.pressed(virtual_key)</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>GPU — OpenGL 1.1</code><span class="api-tag">API</span></div><p>Source helper over WGL and system opengl32.dll. begin_frame sets viewport, clears color/depth and resets model-view; projection remains the caller's responsibility.</p><pre><code>GPU.start(): integer
+GPU.shutdown(): integer
+GPU.present(): integer
+GPU.clear_color(r: float, g: float, b: float, a: float): integer
+GPU.clear(mask: integer): integer
+GPU.viewport(x: integer, y: integer, width: integer, height: integer): integer
+GPU.matrix_mode(mode: integer): integer
+GPU.load_identity(): integer
+GPU.frustum(left: float, right: float, bottom: float, top: float, near_plane: float, far_plane: float): integer
+GPU.ortho(left: float, right: float, bottom: float, top: float, near_plane: float, far_plane: float): integer
+GPU.translate(x: float, y: float, z: float): integer
+GPU.rotate(angle: float, x: float, y: float, z: float): integer
+GPU.begin(mode: integer): integer
+GPU.end(): integer
+GPU.color(r: float, g: float, b: float, a: float): integer
+GPU.texcoord(u: float, v: float): integer
+GPU.vertex(x: float, y: float, z: float): integer
+GPU.normal(x: float, y: float, z: float): integer
+GPU.enable(capability: integer): integer
+GPU.disable(capability: integer): integer
+GPU.cull_face(face: integer): integer
+GPU.polygon_mode(face: integer, mode: integer): integer
+GPU.vendor(): string
+GPU.renderer(): string
+GPU.version(): string
+GPU.extensions(): string
+GPU.get_integer(name: integer): integer
+GPU.get_error(): integer
+GPU.gen_lists(count: integer): integer
+GPU.new_list(list_id: integer): integer
+GPU.end_list(): integer
+GPU.call_list(list_id: integer): integer
+GPU.delete_lists(first_id: integer, count: integer): integer
+GPU.texture_new(width: integer, height: integer, rgba_pointer: integer): integer
+GPU.texture_bind(texture_id: integer): integer
+GPU.texture_delete(texture_id: integer): integer
+GPU.begin_frame(r: float, g: float, b: float, a: float, width: integer, height: integer): integer
+GPU.show_diagnostic(): integer  # compiler-native diagnostic call</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>GPU constants</code><span class="api-tag">API</span></div><p>Exact enum constants defined by helpers/GPU.fox; values follow the OpenGL 1.1 headers.</p><pre><code>GPU_GL_COLOR_BUFFER_BIT = 16384
+GPU_GL_DEPTH_BUFFER_BIT = 256
+GPU_GL_DEPTH_TEST = 2929
+GPU_GL_CULL_FACE = 2884
+GPU_GL_BACK = 1029
+GPU_GL_FRONT = 1028
+GPU_GL_FRONT_AND_BACK = 1032
+GPU_GL_FILL = 6914
+GPU_GL_LINE = 6913
+GPU_GL_POINTS = 6912
+GPU_GL_TRIANGLES = 4
+GPU_GL_TRIANGLE_STRIP = 5
+GPU_GL_TRIANGLE_FAN = 6
+GPU_GL_QUADS = 7
+GPU_GL_QUAD_STRIP = 8
+GPU_GL_POLYGON = 9
+GPU_GL_PROJECTION = 5889
+GPU_GL_MODELVIEW = 5888
+GPU_GL_TEXTURE_2D = 3553
+GPU_GL_LIGHTING = 2896
+GPU_GL_LIGHT0 = 16384
+GPU_GL_NORMALIZE = 2977
+GPU_GL_SMOOTH = 7425
+GPU_GL_FLAT = 7424
+GPU_GL_VENDOR = 7936
+GPU_GL_RENDERER = 7937
+GPU_GL_VERSION = 7938
+GPU_GL_EXTENSIONS = 7939
+GPU_GL_MAX_TEXTURE_SIZE = 3379
+GPU_GL_MAX_LIGHTS = 3377
+GPU_GL_MAX_MODELVIEW_STACK_DEPTH = 3382
+GPU_GL_MAX_PROJECTION_STACK_DEPTH = 3380
+GPU_GL_NEAREST = 9728
+GPU_GL_LINEAR = 9729
+GPU_GL_TEXTURE_MIN_FILTER = 10241
+GPU_GL_TEXTURE_MAG_FILTER = 10240</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Vulkan — device probe and clear/present</code><span class="api-tag">API</span></div><p>Dynamically loads vulkan-1.dll. The probe selects the first enumerated physical device; the renderer is a clear-only swapchain test, not a mesh renderer.</p><pre><code>Vulkan.start(): integer
+Vulkan.shutdown(): integer
+Vulkan.device_count(): integer
+Vulkan.device_name(): string
+Vulkan.api_version(): integer
+Vulkan.driver_version(): integer
+Vulkan.vendor_id(): integer
+Vulkan.device_id(): integer
+Vulkan.device_type(): integer
+Vulkan.last_result(): integer
+Vulkan.render_start(): integer
+Vulkan.render_frame(r: float, g: float, b: float, a: float): integer
+Vulkan.render_shutdown(): integer
+Vulkan.render_diagnostic(): integer</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Color — packed RGB values</code><span class="api-tag">API</span></div><p>rgb is a Win32 COLORREF (red in the low byte); dib_rgb is packed 0x00RRGGBB for Win.pixels framebuffer data.</p><pre><code>Color.rgb(red, green, blue)
+Color.red(color)
+Color.green(color)
+Color.blue(color)
+Color.gray(level)
+Color.dib_rgb(red, green, blue)</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Time — Windows uptime</code><span class="api-tag">API</span></div><p>Uses GetTickCount's 32-bit millisecond counter, which wraps after about 49.7 days. Use elapsed deltas for short intervals.</p><pre><code>Time.seconds()
+Time.elapsed_ms(start_ms)</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Random — deterministic integer PRNG</code><span class="api-tag">API</span></div><p>Linear-congruential pseudo-random generator. range includes both endpoints; this is not cryptographically secure.</p><pre><code>Random.seed(value)
+Random.next()
+Random.range(minimum, maximum)</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Math — numeric helpers</code><span class="api-tag">API</span></div><p>Integer conveniences plus native binary64 math intrinsics. Trigonometric arguments are radians. bmi_x100 returns BMI multiplied by 100; bmi and bmi_cm return floats.</p><pre><code>Math.abs(value)
+Math.pi(): float
+Math.tau(): float
+Math.radians(degrees: float): float
+Math.degrees(radians: float): float
+Math.abs_float(value: float): float
+Math.clamp_float(value: float, minimum: float, maximum: float): float
+Math.min(a, b)
+Math.max(a, b)
+Math.clamp(value, minimum, maximum)
+Math.sign(value)
+Math.square(value)
+Math.pow(base, exponent)
+Math.bmi_x100(weight_kg, height_cm)
+Math.sqrt(value: float): float
+Math.sin(radians: float): float
+Math.cos(radians: float): float
+Math.tan(radians: float): float
+Math.asin(value: float): float
+Math.acos(value: float): float
+Math.atan(value: float): float
+Math.exp(value: float): float
+Math.log(value: float): float
+Math.log10(value: float): float
+Math.atan2(y: float, x: float): float
+Math.floor(value: float): float
+Math.ceil(value: float): float
+Math.pow_float(base: float, exponent: float): float
+Math.lerp(a: float, b: float, amount: float): float
+Math.bmi(weight_kg: float, height_m: float): float
+Math.bmi_cm(weight_kg: float, height_cm: float): float</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Vector3 — scalar 3D vector math</code><span class="api-tag">API</span></div><p>Vectors are passed as scalar components; the helper does not create vector objects.</p><pre><code>Vector3.dot(ax: float, ay: float, az: float, bx: float, by: float, bz: float): float
+Vector3.cross_x(ax: float, ay: float, az: float, bx: float, by: float, bz: float): float
+Vector3.cross_y(ax: float, ay: float, az: float, bx: float, by: float, bz: float): float
+Vector3.cross_z(ax: float, ay: float, az: float, bx: float, by: float, bz: float): float
+Vector3.length(x: float, y: float, z: float): float
+Vector3.distance(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float): float
+Vector3.normalize_x(x: float, y: float, z: float): float
+Vector3.normalize_y(x: float, y: float, z: float): float
+Vector3.normalize_z(x: float, y: float, z: float): float
+Vector3.lerp(a: float, b: float, amount: float): float</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Quaternion — scalar rotation math</code><span class="api-tag">API</span></div><p>Quaternion values are passed as x/y/z/w components. Rotate helpers assume a unit quaternion; normalize first if needed.</p><pre><code>Quaternion.length(qx: float, qy: float, qz: float, qw: float): float
+Quaternion.normalize_x(qx: float, qy: float, qz: float, qw: float): float
+Quaternion.normalize_y(qx: float, qy: float, qz: float, qw: float): float
+Quaternion.normalize_z(qx: float, qy: float, qz: float, qw: float): float
+Quaternion.normalize_w(qx: float, qy: float, qz: float, qw: float): float
+Quaternion.rotate_x(qx: float, qy: float, qz: float, qw: float, vx: float, vy: float, vz: float): float
+Quaternion.rotate_y(qx: float, qy: float, qz: float, qw: float, vx: float, vy: float, vz: float): float
+Quaternion.rotate_z(qx: float, qy: float, qz: float, qw: float, vx: float, vy: float, vz: float): float</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Matrix4 — scalar matrix components</code><span class="api-tag">API</span></div><p>Component-level operations only; there is no runtime matrix aggregate type.</p><pre><code>Matrix4.row_dot(m0: float, m1: float, m2: float, m3: float, x: float, y: float, z: float, w: float): float
+Matrix4.multiply_component(a0: float, a1: float, a2: float, a3: float, b0: float, b1: float, b2: float, b3: float): float
+Matrix4.perspective_divide(value: float, clip_w: float): float
+Matrix4.viewport_x(ndc_x: float, width: float): float
+Matrix4.viewport_y(ndc_y: float, height: float): float
+Matrix4.translation_x(x: float, y: float, z: float): float
+Matrix4.translation_y(x: float, y: float, z: float): float
+Matrix4.translation_z(x: float, y: float, z: float): float
+Matrix4.rotation_x_y(y: float, angle: float): float
+Matrix4.rotation_x_z(y: float, angle: float): float
+Matrix4.viewport_depth(ndc_z: float, near_plane: float, far_plane: float): float</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Camera3D — first-person camera math</code><span class="api-tag">API</span></div><p>Angles are radians. World-up is +Y; yaw rotates in the X/Z plane and pitch controls vertical look.</p><pre><code>Camera3D.forward_x(yaw: float, pitch: float): float
+Camera3D.forward_y(yaw: float, pitch: float): float
+Camera3D.forward_z(yaw: float, pitch: float): float
+Camera3D.strafe_x(yaw: float): float
+Camera3D.strafe_z(yaw: float): float
+Camera3D.add_mouse_delta(angle: float, delta: float, sensitivity: float): float</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Game — simple integer game logic</code><span class="api-tag">API</span></div><p>Small integer helpers for movement, wrapping, dead zones and rectangle overlap.</p><pre><code>Game.clamp(value, minimum, maximum)
+Game.move_axis(position, direction, speed)
+Game.rect_overlap(ax, aw, bx, bw)
+Game.wrap(value, minimum, maximum)
+Game.deadzone(value, threshold)</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Geometry — 2D geometry helpers</code><span class="api-tag">API</span></div><p>Basic interval tests and scalar geometry calculations.</p><pre><code>Geometry.between(value, minimum, maximum)
+Geometry.overlap_1d(start_a, size_a, start_b, size_b)
+Geometry.distance_squared(dx, dy)
+Geometry.midpoint(a, b)</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Physics — simple motion helpers</code><span class="api-tag">API</span></div><p>Scalar/integer motion operations; this is not a rigid-body physics engine.</p><pre><code>Physics.gravity_step(velocity, gravity)
+Physics.position_step(position, velocity)
+Physics.bounce(velocity, restitution_percent)
+Physics.distance_squared(dx, dy)
+Physics.approach(current, target, amount)</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Collision3D — AABB collision</code><span class="api-tag">API</span></div><p>AABB arguments are centers plus half-sizes. Returns 1 for overlap and 0 otherwise.</p><pre><code>Collision3D.aabb(ax, ay, az, ahx, ahy, ahz, bx, by, bz, bhx, bhy, bhz): integer
+Collision3D.move_toward(current: float, target: float, max_step: float): float</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Raycast3D — ray/AABB intersection</code><span class="api-tag">API</span></div><p>Slab-based ray/AABB helpers. aabb returns a non-negative ray parameter for a hit, or -1.0 for no hit.</p><pre><code>Raycast3D.axis_near(origin: float, direction: float, slab_min: float, slab_max: float): float
+Raycast3D.axis_far(origin: float, direction: float, slab_min: float, slab_max: float): float
+Raycast3D.aabb(ox: float, oy: float, oz: float, dx: float, dy: float, dz: float, min_x: float, min_y: float, min_z: float, max_x: float, max_y: float, max_z: float): float</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>RuntimeArray — native heap buffers</code><span class="api-tag">API</span></div><p>Opaque integer pointer to zero-based 64-bit slots. Typed accessors reinterpret slot payloads; setters return 1 on success or 0 for invalid/out-of-range access. Free buffers when finished.</p><pre><code>RuntimeArray.create(count: integer): integer
+RuntimeArray.length(buffer: integer): integer
+RuntimeArray.get_int(buffer: integer, index: integer): integer
+RuntimeArray.get_float(buffer: integer, index: integer): float
+RuntimeArray.set_int(buffer: integer, index: integer, value: integer): integer
+RuntimeArray.set_float(buffer: integer, index: integer, value: float): integer
+RuntimeArray.free(buffer: integer): integer</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>World3D — mutable voxel storage</code><span class="api-tag">API</span></div><p>Flat row-major world of integer block IDs; 0 is air. Coordinates are zero-based; chunk/local helpers account for negative world coordinates.</p><pre><code>World3D.in_bounds(x, y, z, width, height, depth): integer
+World3D.index(x, y, z, width, depth): integer
+World3D.create(width: integer, height: integer, depth: integer): integer
+World3D.get(world: integer, x: integer, y: integer, z: integer, width: integer, height: integer, depth: integer): integer
+World3D.set(world: integer, x: integer, y: integer, z: integer, width: integer, height: integer, depth: integer, block_id: integer): integer
+World3D.place(world: integer, x: integer, y: integer, z: integer, width: integer, height: integer, depth: integer, block_id: integer): integer
+World3D.remove(world: integer, x: integer, y: integer, z: integer, width: integer, height: integer, depth: integer): integer
+World3D.free(world: integer): integer
+World3D.chunk_coord(world_coord, chunk_size): integer
+World3D.local_coord(world_coord, chunk_size): integer
+World3D.cell_center(coord: float, block_size: float): float</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Renderer — software framebuffer</code><span class="api-tag">API</span></div><p>CPU rasterizer backed by native pixel memory. Present its buffer with Win.pixels; this is separate from the OpenGL driver renderer.</p><pre><code>Renderer.create(width: integer, height: integer): integer
+Renderer.destroy(buffer: integer): integer
+Renderer.pixel(buffer: integer, width: integer, height: integer, x: integer, y: integer, color: integer): integer
+Renderer.clear(buffer: integer, width: integer, height: integer, color: integer): integer
+Renderer.rect(buffer: integer, width: integer, height: integer, x: integer, y: integer, rect_width: integer, rect_height: integer, color: integer): integer
+Renderer.rect_outline(buffer: integer, width: integer, height: integer, x: integer, y: integer, rect_width: integer, rect_height: integer, color: integer): integer
+Renderer.line(buffer: integer, width: integer, height: integer, x0: integer, y0: integer, x1: integer, y1: integer, color: integer): integer
+Renderer.triangle(buffer: integer, width: integer, height: integer, x1: integer, y1: integer, x2: integer, y2: integer, x3: integer, y3: integer, color: integer): integer
+Renderer.circle(buffer: integer, width: integer, height: integer, cx: integer, cy: integer, radius: integer, color: integer): integer
+Renderer.fill_circle(buffer: integer, width: integer, height: integer, cx: integer, cy: integer, radius: integer, color: integer): integer
+Renderer.vertex_x(vertex: integer, size: float): float
+Renderer.vertex_y(vertex: integer, size: float): float
+Renderer.vertex_z(vertex: integer, size: float): float
+Renderer.project_x(vertex: integer, size: float, angle_x: float, angle_y: float, angle_z: float, distance: float, focal: float, center_x: float): float
+Renderer.project_y(vertex: integer, size: float, angle_x: float, angle_y: float, angle_z: float, distance: float, focal: float, center_y: float): float
+Renderer.cube(buffer: integer, width: integer, height: integer, size: float, angle_x: float, angle_y: float, angle_z: float, distance: float, focal: float, center_x: integer, center_y: integer, color: integer): integer</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Plot — curves and data samples</code><span class="api-tag">API</span></div><p>Draws grids, analytic curves or points into a Renderer buffer. samples reads x/y values from runtime buffers.</p><pre><code>Plot.map_x(value: float, x_min: float, x_max: float, left: integer, plot_width: integer): integer
+Plot.map_y(value: float, y_min: float, y_max: float, top: integer, plot_height: integer): integer
+Plot.grid(buffer: integer, width: integer, height: integer, left: integer, top: integer, plot_width: integer, plot_height: integer, x_min: float, x_max: float, y_min: float, y_max: float, divisions_x: integer, divisions_y: integer, grid_color: integer, axis_color: integer): integer
+Plot.sine(buffer: integer, width: integer, height: integer, left: integer, top: integer, plot_width: integer, plot_height: integer, x_min: float, x_max: float, y_min: float, y_max: float, amplitude: float, frequency: float, phase: float, samples: integer, color: integer): integer
+Plot.cosine(buffer: integer, width: integer, height: integer, left: integer, top: integer, plot_width: integer, plot_height: integer, x_min: float, x_max: float, y_min: float, y_max: float, amplitude: float, frequency: float, phase: float, samples: integer, color: integer): integer
+Plot.quadratic(buffer: integer, width: integer, height: integer, left: integer, top: integer, plot_width: integer, plot_height: integer, x_min: float, x_max: float, y_min: float, y_max: float, a: float, b: float, c: float, samples: integer, color: integer): integer
+Plot.samples(buffer: integer, width: integer, height: integer, left: integer, top: integer, plot_width: integer, plot_height: integer, x_values: integer, y_values: integer, count: integer, x_min: float, x_max: float, y_min: float, y_max: float, color: integer, connect: integer): integer</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>OS — native Windows filesystem</code><span class="api-tag">API</span></div><p>Status functions return integer success/exists flags (1/0); read_text returns a string. File contents are UTF-8; Win32 A paths must match the active ANSI code page. read_text is limited to 16 MiB per file.</p><pre><code>OS.mkdir(path: string): integer
+OS.create_dir(path: string): integer
+OS.exists(path: string): integer
+OS.delete(path: string): integer
+OS.remove(path: string): integer
+OS.copy(source: string, destination: string): integer
+OS.move(source: string, destination: string): integer
+OS.save_text(path: string, contents: string): integer
+OS.write_text(path: string, contents: string): integer
+OS.append_text(path: string, contents: string): integer
+OS.read_text(path: string): string</code></pre></div>
+          <div class="api-card"><div class="api-signature"><code>Tkinter — layout coordinate helpers</code><span class="api-tag">API</span></div><p>Calculates coordinates for native Win controls. It does not launch Python or create Tkinter widgets.</p><pre><code>Tkinter.center_x(window_width, widget_width)
+Tkinter.center_y(window_height, widget_height)
+Tkinter.row_y(row, top, row_height, gap)
+Tkinter.column_x(column, left, column_width, gap)</code></pre></div></div>
+        <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>Buffer and rendering contracts</strong><p>Free every <code>RuntimeArray</code>, <code>World3D</code> or <code>Renderer</code> buffer when finished. OpenGL texture uploads consume contiguous RGBA8 memory. <code>Color.rgb</code> is a Win32 COLORREF, while <code>Color.dib_rgb</code> is the packed DIB framebuffer value; do not interchange them. OpenGL 1.1 is fixed-function, and Vulkan is clear/present only.</p></div></div>
+      </section>
+            <section class="doc-section" id="limits" data-search="limitations no shaders no Vulkan mesh renderer no audio runtime arrays GUI one window tests">
         <div class="section-heading"><div><span class="section-kicker">07 / STATUS</span><h2>Implementation limits</h2></div><span class="section-icon">◷</span></div>
         <p>Compilation to PE32+ and successful imports are not proof of display correctness. OpenGL context creation and Vulkan surface/swapchain presentation should be tested on an actual Windows desktop and supported driver.</p>
         <div class="limit-grid">
