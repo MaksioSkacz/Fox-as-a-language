@@ -1,3 +1,10 @@
+## 2026-11-05 — Boolean logic foundation
+- Added `and`, `or`, `not`, and `xor`, plus symbolic aliases `&&`, `||`, and `!`.
+- Added short-circuit evaluation for `and` and `or` in native x86-64 output.
+- Added strict boolean operand checks and explicit boolean variable, parameter, and return annotations.
+- Added precedence rules: `not` > `and` > `xor` > `or`, after comparisons.
+- Added a rule-based AI decision example and compiler tests for precedence, short-circuiting, and boolean functions.
+
 # Fox compiler changelog
 
 ## Current development release — October 18, 2026
