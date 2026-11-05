@@ -58,4 +58,5 @@ Compiler unit tests and PE32+ output checks are run against the development snap
 ### Source checks
 - \`python -m py_compile fox.py\` passed.
 - Native PE32+ compile smoke checks passed for function/control-flow, OpenGL, Vulkan, FoxCraft3D, plotting, filesystem and mouse-capture examples.
+- The archive test suite reports 4 existing failures (63 of 67 tests pass): three historical GPU diagnostic examples call the missing `GPU.show_diagnostic()` helper, and the helper-module allow-list in `tests/test_helpers.py` has not been updated to include `GPU` and `Vulkan`.
 - GUI rendering and driver behavior still require testing on a real Windows desktop; successful compilation does not establish visual/runtime correctness.
