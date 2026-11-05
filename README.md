@@ -53,3 +53,7 @@ The MSI is versioned independently from the language docs. The workflow builds a
 - `installer/Fox.wxs` — per-user MSI definition and user PATH integration
 
 The site is plain HTML, CSS and JavaScript and needs no build step.
+
+## Current Fox language update — boolean logic
+
+The current attached compiler source now supports native boolean expressions for decision-making: `and` / `&&`, `or` / `||`, `not` / `!`, and `xor`. AND/OR use short-circuit evaluation, logical operands are strictly boolean, and boolean types are supported in variables and typed function parameters/returns. See the [language guide](https://maksioskacz.github.io/Fox-as-a-language/) for syntax and examples.
