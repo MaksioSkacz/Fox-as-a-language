@@ -157,7 +157,8 @@ end:</code></pre></div>
         <h3>Logical operators</h3>
         <div class="table-wrap"><table><thead><tr><th>Operator</th><th>Meaning</th><th>Behavior</th></tr></thead><tbody><tr><td><code>and</code>, <code>&amp;&amp;</code></td><td>Logical AND</td><td>Short-circuits when the left operand is false.</td></tr><tr><td><code>or</code>, <code>||</code></td><td>Logical OR</td><td>Short-circuits when the left operand is true.</td></tr><tr><td><code>not</code>, <code>!</code></td><td>Logical NOT</td><td>Inverts one boolean value.</td></tr><tr><td><code>xor</code></td><td>Exclusive OR</td><td>True when operands differ; evaluates both operands.</td></tr></tbody></table></div>
         <p>Logical operators require boolean operands. Precedence from highest to lowest is arithmetic, comparisons, <code>not</code>, <code>and</code>, <code>xor</code>, then <code>or</code>. Parentheses can make grouping explicit.</p>
-        <div class="code-card"><div class="code-header"><span>decision.fox</span></div><pre><code>variable alive: boolean = true
+        <div class="code-card"><div class="code-header"><span>decision.fox</span></div><pre><code>include Con as Console
+variable alive: boolean = true
 variable target_visible: boolean = true
 variable has_ammo: boolean = false
 
