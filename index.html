@@ -110,7 +110,7 @@ Console.log(<span class="syn-number">2</span> + <span class="syn-number">3</span
 Console.log(<span class="syn-string">"The # inside this string is text"</span>)</code></pre></div>
         <h3>Names & literals</h3><p>Identifiers begin with an ASCII letter or underscore, followed by letters, digits, or underscores. String literals use double quotes and JSON-style escapes, such as <code>\n</code>, <code>\t</code>, <code>\"</code>, and <code>\\</code>.</p>
         <div class="mini-grid"><div class="mini-card"><strong>Numbers</strong><p><code>42</code>, <code>-8</code>, <code>3.14</code>, <code>1e3</code></p></div><div class="mini-card"><strong>Boolean literals</strong><p><code>true</code> and <code>false</code></p></div><div class="mini-card"><strong>Null literal</strong><p><code>null</code></p></div><div class="mini-card"><strong>Block terminator</strong><p><code>end:</code> closes blocks</p></div></div>
-        <p class="muted-note">Reserved words include <code>include</code>, <code>variable</code>, <code>constant</code>, <code>true</code>, <code>false</code>, <code>null</code>, <code>while</code>, <code>if</code>, <code>else</code>, <code>for</code>, <code>to</code>, <code>step</code>, <code>end</code>, and <code>return</code>. Some forms, such as <code>include</code>, are restricted to top-level code.</p>
+        <p class="muted-note">Reserved words include <code>include</code>, <code>variable</code>, <code>constant</code>, <code>true</code>, <code>false</code>, <code>null</code>, <code>while</code>, <code>if</code>, <code>else</code>, <code>for</code>, <code>to</code>, <code>step</code>, <code>end</code>, <code>return</code>, <code>and</code>, <code>or</code>, <code>not</code>, and <code>xor</code>. Some forms, such as <code>include</code>, are restricted to top-level code.</p>
       </section>
 
       <section class="doc-section" id="values" data-search="values types integer binary64 float string boolean null array dictionary compile time runtime model">
@@ -154,7 +154,23 @@ Console.log(power)
 if power >= 8.0
     Console.log("ready")
 end:</code></pre></div>
-        <p class="muted-note">Chained comparisons such as <code>a &lt; b &lt; c</code> are rejected. Logical operators such as <code>&amp;&amp;</code>, <code>and</code>, <code>or</code>, and boolean negation are not implemented; <code>break</code> and <code>continue</code> are also unsupported. Use nested <code>if</code> statements and loop conditions instead.</p>
+        <h3>Logical operators</h3>
+        <div class="table-wrap"><table><thead><tr><th>Operator</th><th>Meaning</th><th>Behavior</th></tr></thead><tbody><tr><td><code>and</code>, <code>&amp;&amp;</code></td><td>Logical AND</td><td>Short-circuits when the left operand is false.</td></tr><tr><td><code>or</code>, <code>||</code></td><td>Logical OR</td><td>Short-circuits when the left operand is true.</td></tr><tr><td><code>not</code>, <code>!</code></td><td>Logical NOT</td><td>Inverts one boolean value.</td></tr><tr><td><code>xor</code></td><td>Exclusive OR</td><td>True when operands differ; evaluates both operands.</td></tr></tbody></table></div>
+        <p>Logical operators require boolean operands. Precedence from highest to lowest is arithmetic, comparisons, <code>not</code>, <code>and</code>, <code>xor</code>, then <code>or</code>. Parentheses can make grouping explicit.</p>
+        <div class="code-card"><div class="code-header"><span>decision.fox</span></div><pre><code>variable alive: boolean = true
+variable target_visible: boolean = true
+variable has_ammo: boolean = false
+
+if alive and target_visible and has_ammo
+    Console.log("Attack")
+else
+    Console.log("Hold")
+end:
+
+if alive and (target_visible || has_ammo) and not has_ammo
+    Console.log("Consider repositioning")
+end:</code></pre></div>
+        <p class="muted-note">Chained comparisons such as <code>a &lt; b &lt; c</code> remain unsupported. <code>break</code> and <code>continue</code> are also unsupported.</p>
       </section>
 
       <section class="doc-section" id="control-flow" data-search="control flow if else while for to step end loops branching conditions runtime integer comparison">
