@@ -97,7 +97,7 @@ if gpu_ready == 1
     GPU.shutdown()
 end:</code></pre></div>
         <div class="callout callout-warn"><span class="callout-symbol">!</span><div><strong>OpenGL 1.1 scope</strong><p>This is the Windows compatibility/fixed-function API, not a modern shader pipeline. Fox does not currently expose programmable shaders, compute shaders, vertex/index-buffer objects, or standardized VRAM/temperature/power sensors. Driver acceleration depends on the installed system; <code>GPU.renderer()</code> may report a software fallback such as <code>GDI Generic</code>.</p></div></div>
-        <p class="muted-note">The archive includes <code>examples/gpu_cube.fox</code>, driver diagnostics, and texture upload smoke tests. Compile checks do not prove the code displays correctly; test context creation on a real Windows desktop with a compatible driver.</p>
+        <p class="muted-note">The archive includes <code>examples/gpu_cube.fox</code> and texture-upload smoke tests. Three older diagnostic source files call <code>GPU.show_diagnostic()</code>, but that wrapper is absent from the current <code>helpers/GPU.fox</code> and those files fail compiler call validation. For supported diagnostics, use <code>GPU.get_error()</code> and the vendor/renderer/version queries. Compile checks do not prove display correctness; test context creation on a real Windows desktop with a compatible driver.</p>
       </section>
 
       <section class="doc-section" id="vulkan" data-search="Vulkan render_start render_frame render_shutdown device_count device_name api_version driver_version vendor_id device_id device_type swapchain clear present experimental">
