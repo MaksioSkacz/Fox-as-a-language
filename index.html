@@ -154,7 +154,7 @@ Console.log(power)
 if power >= 8.0
     Console.log("ready")
 end:</code></pre></div>
-        <p class="muted-note">Chained comparisons such as <code>a &lt; b &lt; c</code> are rejected. Logical operators such as <code>&amp;&amp;</code>, <code>and</code>, <code>or</code>, and boolean negation are not implemented; use nested <code>if</code> statements instead.</p>
+        <p class="muted-note">Chained comparisons such as <code>a &lt; b &lt; c</code> are rejected. Logical operators such as <code>&amp;&amp;</code>, <code>and</code>, <code>or</code>, and boolean negation are not implemented; <code>break</code> and <code>continue</code> are also unsupported. Use nested <code>if</code> statements and loop conditions instead.</p>
       </section>
 
       <section class="doc-section" id="control-flow" data-search="control flow if else while for to step end loops branching conditions runtime integer comparison">
@@ -284,7 +284,7 @@ Win.begin(<span class="syn-string">"Fox Window"</span>, <span class="syn-number"
 Win.button(<span class="syn-string">"Click me"</span>, <span class="syn-number">30</span>, <span class="syn-number">80</span>, <span class="syn-number">140</span>, <span class="syn-number">40</span>, <span class="syn-string">"clicked"</span>)
 Win.paint(<span class="syn-string">"draw_scene"</span>)
 Win.run()</code></pre></div>
-        <p class="muted-note">Drawing calls are compiler-known GUI operations with literal arguments, not a general-purpose graphics API. There is no image/sprite loader, audio API, keyboard/mouse event API or animation timer in this version.</p>
+        <p class="muted-note">Window creation, controls and <code>Win.text</code> use compile-time text/coordinate arguments; <code>Win.rect</code> accepts runtime integer expressions. These are focused Win32/GDI operations, not a general graphics API. <code>Win.timer</code> can drive update and animation loops, but there is no sprite/image loader, audio API or general keyboard/mouse event callback system.</p>
       </section>
 
       <section class="doc-section" id="mouse" data-search="Mouse input capture hide show cursor position relative delta first person FPS">
