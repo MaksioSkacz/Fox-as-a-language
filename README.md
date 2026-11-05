@@ -48,6 +48,7 @@ The MSI is versioned independently from the language docs. The workflow builds a
 - `styles.css` — responsive themes and layout
 - `app.js` — search, navigation, theme preference and code-copy behavior
 - `CHANGELOG.md` — release/compiler changes
+- `fox-vscode/` — VS Code language extension for `.fox` files, with TextMate syntax highlighting, language configuration, snippets and basic keyword completions
 - `.github/workflows/build-fox-msi.yml` — Windows installer build and release workflow
 - `installer/Fox.wxs` — per-user MSI definition and user PATH integration
 
