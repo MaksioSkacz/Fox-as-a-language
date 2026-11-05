@@ -41,3 +41,21 @@ Compiler unit tests and PE32+ output checks are run against the development snap
 ### Validation
 - GitHub Actions built the standalone `fox.exe`, passed `fox.exe --help`, compiled `installer/mouse_capture_demo.fox`, and successfully generated `Fox-Setup-x64.msi` on a Windows runner.
 - Archive audit: `python -m py_compile fox.py` passed. The bundled full pytest suite currently has 5 failures (4 stale GUI examples reference missing `helpers/Gui.fox`; one helper test's expected module list omits `GPU` and `Vulkan`). Some GPU diagnostic examples also call `GPU.show_diagnostic()`, which is not wrapped by the current `helpers/GPU.fox`. These source/test inconsistencies are not hidden by the documentation and remain to be fixed in the source archive.
+
+
+## Source snapshot documentation audit — November 5, 2026
+
+### Language guide
+- Corrected the console reference for runtime integer, float and string output, fixed-point output, and the native file-operation shortcuts.
+- Expanded the source-module inventory to all 22 helper modules present in the audited Fox source tree.
+- Rechecked the documented runtime/static value split, callback constraints, Windows GUI limits, and current graphics boundaries.
+
+### Complete API reference
+- Added exact helper function signatures from the supplied \`helpers/*.fox\` files, including the full OpenGL constant set and the Vulkan, memory, world, math, input, rendering, plotting and filesystem helpers.
+- Clarified that \`Keyboard\` exposes virtual-key constants while held/pressed polling is a compiler-native operation.
+- Documented the 16 MiB \`OS.read_text\` limit and distinguished GDI \`COLORREF\`, DIB pixel packing and RGBA texture buffers.
+
+### Source checks
+- \`python -m py_compile fox.py\` passed.
+- Native PE32+ compile smoke checks passed for function/control-flow, OpenGL, Vulkan, FoxCraft3D, plotting, filesystem and mouse-capture examples.
+- GUI rendering and driver behavior still require testing on a real Windows desktop; successful compilation does not establish visual/runtime correctness.
