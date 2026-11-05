@@ -16,7 +16,7 @@ The public documentation site for the evolving native Windows x86-64 compiler.
 - Native `GPU` helper using WGL and system OpenGL 1.1 fixed-function calls: immediate-mode geometry, transforms, display lists, texture upload, driver strings and capability queries.
 - Experimental `Vulkan` device probing plus a Win32 surface/swapchain clear-and-present path. It is not a mesh or shader renderer.
 - 22 Fox source-helper modules covering camera, collision, color, OpenGL, game logic, geometry, keyboard, math, matrices, filesystem, physics, plotting, quaternions, random numbers, raycasts, software rendering, runtime arrays, time, Tkinter-style layout calculations, vectors, Vulkan and voxel-world storage.
-- FoxCraft3D voxel sandbox, OpenGL cube/texture diagnostics, Vulkan clear demo, software renderer, plotting, filesystem, mouse and native-window examples.
+- FoxCraft3D voxel sandbox, OpenGL cube and texture-upload examples, Vulkan clear demo, software renderer, plotting, filesystem, mouse and native-window examples.
 - VS Code extension with Fox syntax highlighting and language configuration.
 
 The exact API and current graphics limits are documented in the [graphics & helper API reference](https://maksioskacz.github.io/Fox-as-a-language/api-reference.html). Normal arrays/dictionaries remain compile-time values; use `RuntimeArray`/ `World3D` for mutable native numeric buffers.
